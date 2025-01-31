@@ -117,7 +117,7 @@ namespace PlotPingApp
             plot.Plot.YAxis.SetBoundary(0, latencyMax);
             plot.Plot.XAxis.DateTimeFormat(true);
             plot.Plot.XAxis.TickLabelFormat(x => DateTime.FromOADate(x).ToString("HH:mm:ss"));
-            plot.Plot.AddScatter(timeValues, hopLatencies, label: "Latency (ms)", markerSize: 2);
+            plot.Plot.AddScatter(timeValues, hopLatencies, markerSize: 2);
 
             var bar = plot.Plot.AddBar(dropouts, timeValues);
             bar.BarWidth = (1.0 / 86400) * (freq / 1000);

@@ -124,7 +124,7 @@ namespace PlotPingApp
             {
                 string title = x <= hops.Length ? hops[x-1].ipAddress : "";      // hop unreachable this trace
                 FormsPlot plotter = (FormsPlot)this.graphs.Controls[i++];
-                Plotter.RenderTraceOverTime(plotter, traces, x, title, PING_FREQUENCY);
+                Plotter.RenderTraceOverTime(plotter, traces, x, title + " Latency (ms)", PING_FREQUENCY);
             });
 
             listViewTrace.Items.Clear();
