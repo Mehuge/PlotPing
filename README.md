@@ -16,7 +16,7 @@ Time window size can be anything from 5/10 minutes to several days.
 
 [ ] Export trace option
 
-[ ] MRU for host (with persistance)
+[x] MRU for host (with persistance)
 
 [ ] Add ability to select which hops to show graphs for and auto-resize them (to a point) or allow graph panel to scroll
 

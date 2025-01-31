@@ -39,7 +39,7 @@
             this.max = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ave = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.graphs = new System.Windows.Forms.Panel();
-            this.picker = new System.Windows.Forms.Button();
+            this.buttonMRU = new System.Windows.Forms.Button();
             HOP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
@@ -137,25 +137,26 @@
             this.graphs.Size = new System.Drawing.Size(1323, 369);
             this.graphs.TabIndex = 7;
             // 
-            // picker
+            // buttonMRU
             // 
-            this.picker.BackColor = System.Drawing.Color.Transparent;
-            this.picker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.picker.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
-            this.picker.Location = new System.Drawing.Point(1192, 14);
-            this.picker.Margin = new System.Windows.Forms.Padding(2);
-            this.picker.Name = "picker";
-            this.picker.Size = new System.Drawing.Size(38, 24);
-            this.picker.TabIndex = 8;
-            this.picker.Text = "▼";
-            this.picker.UseVisualStyleBackColor = false;
+            this.buttonMRU.BackColor = System.Drawing.Color.Transparent;
+            this.buttonMRU.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonMRU.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
+            this.buttonMRU.Location = new System.Drawing.Point(1197, 14);
+            this.buttonMRU.Margin = new System.Windows.Forms.Padding(2);
+            this.buttonMRU.Name = "buttonMRU";
+            this.buttonMRU.Size = new System.Drawing.Size(32, 24);
+            this.buttonMRU.TabIndex = 8;
+            this.buttonMRU.Text = "▼";
+            this.buttonMRU.UseVisualStyleBackColor = false;
+            this.buttonMRU.Click += new System.EventHandler(this.buttonMRU_Click);
             // 
             // PlotPing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1352, 923);
-            this.Controls.Add(this.picker);
+            this.Controls.Add(this.buttonMRU);
             this.Controls.Add(this.graphs);
             this.Controls.Add(this.listViewTrace);
             this.Controls.Add(this.buttonGoNew);
@@ -181,7 +182,7 @@
         private System.Windows.Forms.ColumnHeader max;
         private System.Windows.Forms.ColumnHeader ave;
         private System.Windows.Forms.Panel graphs;
-        private System.Windows.Forms.Button picker;
+        private System.Windows.Forms.Button buttonMRU;
     }
 }
 

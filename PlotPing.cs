@@ -6,11 +6,18 @@ using System.Windows.Forms;
 using ScottPlot;
 using System.Diagnostics;
 using ListView = System.Windows.Forms.ListView;
+using System.IO;
+using System.Linq;
 
 namespace PlotPingApp
 {
     public partial class PlotPing : Form
     {
+        private List<string> mru = new List<string>();
+        private const int MAX_MRU_COUNT = 25;
+        private string mruFilePath;
+        private ContextMenuStrip mruMenu = new ContextMenuStrip();
+
         public PlotPing()
         {
             InitializeComponent();
@@ -21,6 +28,10 @@ namespace PlotPingApp
             formsPlot1.Plot.YAxis.Layout(0, 0, 40);
             formsPlot1.Plot.Title(null, false, Color.Gray, 10);
             formsPlot1.Invalidate();
+
+            // Load MRU
+            mruFilePath = Path.Combine(Application.UserAppDataPath, "mru.txt");
+            LoadMRU();
         }
 
         private Traceroute traceroute = null;
@@ -28,24 +39,13 @@ namespace PlotPingApp
 
         private void buttonGoNew_Click(object sender, EventArgs e)
         {
-            ToggleTrace();
-        }
-
-        private void ToggleTrace() {
-            string ipAddress = this.testIPAddress.Text.Trim();
-            if (buttonGoNew.Text == "Start")
-            {
-                StartTrace(ipAddress);
-                buttonGoNew.Text = "Stop";
-                return;
-            }
-
             StopTrace();
-            buttonGoNew.Text = "Start";
+            StartTrace();
         }
 
-        private void StartTrace(string ipAddress)
+        private void StartTrace()
         {
+            string ipAddress = this.testIPAddress.Text.Trim();
             if (traceroute == null)
             {
                 traceroute = new Traceroute(ipAddress);
@@ -55,7 +55,10 @@ namespace PlotPingApp
                 traceroute.Clear();
                 traceroute.SetIPAddress(ipAddress);
             }
-            
+
+            AddToMRU(ipAddress);
+            buttonGoNew.Text = "Stop";
+
             traceroute.OnTrace += Traceroute_OnTrace;
 
             // traceroute.Start();
@@ -67,6 +70,7 @@ namespace PlotPingApp
             //traceroute?.Stop();
             traceroute?.StopBackground();
             selectedHops.Clear();
+            buttonGoNew.Text = "Start";
         }
 
         private void Traceroute_OnTrace(object sender, Hop[] hops)
@@ -155,7 +159,13 @@ namespace PlotPingApp
 
         private void testIPAddress_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == (char) Keys.Return) ToggleTrace();
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                AddToMRU(testIPAddress.Text.Trim());
+                StopTrace();
+                StartTrace();
+                e.Handled = true; // Prevent system beep
+            }
         }
 
         private void listViewTrace_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
@@ -222,9 +232,69 @@ namespace PlotPingApp
             TextRenderer.DrawText(e.Graphics, e.Header.Text, e.Font, bounds, Color.Black, align);
         }
 
-        private void mruTextBox1_TextChanged(object sender, EventArgs e)
+        private void buttonMRU_Click(object sender, EventArgs e)
         {
+            ShowMRUMenu(buttonMRU);
+        }
 
+
+        private void LoadMRU()
+        {
+            try
+            {
+                if (File.Exists(mruFilePath))
+                {
+                    mru = File.ReadAllLines(mruFilePath)
+                        .Where(line => !string.IsNullOrWhiteSpace(line))
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .Reverse()
+                        .Take(MAX_MRU_COUNT)
+                        .Reverse() // Correct order for adding new items
+                        .ToList();
+                }
+            }
+            catch { /* Handle file read errors if needed */ }
+        }
+
+        private void SaveMRU()
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(mruFilePath));
+                File.WriteAllLines(mruFilePath, mru.AsEnumerable().Reverse());
+            }
+            catch { /* Handle file write errors if needed */ }
+        }
+
+        private void AddToMRU(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+            mru.RemoveAll(s => s.Equals(text, StringComparison.OrdinalIgnoreCase));
+            mru.Add(text.Trim());
+            while (mru.Count > MAX_MRU_COUNT)
+                mru.RemoveAt(0);
+            // SaveMRU();
+        }
+
+        private void ShowMRUMenu(Control anchor)
+        {
+            if (mru.Count == 0) return;
+            mruMenu.Items.Clear();
+            foreach (var item in mru.AsEnumerable().Reverse())
+            {
+                var menuItem = new ToolStripMenuItem(item);
+                menuItem.Click += (s, e) => testIPAddress.Text = item;
+                mruMenu.Items.Add(menuItem);
+            }
+
+            int title = this.Size.Height - this.ClientRectangle.Height;
+            mruMenu.Show(new System.Drawing.Point(this.Left + anchor.Left + anchor.Width - mruMenu.Width + 8, this.Top + title + anchor.Top + anchor.Height - 8));
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            SaveMRU();
         }
     }
 }
