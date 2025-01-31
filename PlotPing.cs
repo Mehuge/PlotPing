@@ -284,7 +284,12 @@ namespace PlotPingApp
             foreach (var item in mru.AsEnumerable().Reverse())
             {
                 var menuItem = new ToolStripMenuItem(item);
-                menuItem.Click += (s, e) => testIPAddress.Text = item;
+                menuItem.Click += (s, e) =>
+                {
+                    StopTrace();
+                    testIPAddress.Text = item;
+                    StartTrace();
+                };
                 mruMenu.Items.Add(menuItem);
             }
 
