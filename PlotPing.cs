@@ -39,8 +39,9 @@ namespace PlotPingApp
 
         private void buttonGoNew_Click(object sender, EventArgs e)
         {
+            bool start = buttonGoNew.Text == "Start";
             StopTrace();
-            StartTrace();
+            if (start) StartTrace();
         }
 
         private void StartTrace()
