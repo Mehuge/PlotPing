@@ -72,10 +72,10 @@
             // 
             // buttonGoNew
             // 
-            this.buttonGoNew.Location = new System.Drawing.Point(1236, 14);
+            this.buttonGoNew.Location = new System.Drawing.Point(1235, 8);
             this.buttonGoNew.Margin = new System.Windows.Forms.Padding(4);
             this.buttonGoNew.Name = "buttonGoNew";
-            this.buttonGoNew.Size = new System.Drawing.Size(100, 24);
+            this.buttonGoNew.Size = new System.Drawing.Size(100, 37);
             this.buttonGoNew.TabIndex = 5;
             this.buttonGoNew.Text = "Start";
             this.buttonGoNew.UseVisualStyleBackColor = true;
