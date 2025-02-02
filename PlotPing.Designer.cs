@@ -40,7 +40,12 @@
             this.ave = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.graphs = new System.Windows.Forms.Panel();
             this.buttonMRU = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.window = new System.Windows.Forms.ComboBox();
+            this.offsetBar = new System.Windows.Forms.TrackBar();
+            this.status = new System.Windows.Forms.Label();
             HOP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).BeginInit();
             this.SuspendLayout();
             // 
             // HOP
@@ -53,7 +58,7 @@
             this.testIPAddress.Location = new System.Drawing.Point(17, 14);
             this.testIPAddress.Margin = new System.Windows.Forms.Padding(4);
             this.testIPAddress.Name = "testIPAddress";
-            this.testIPAddress.Size = new System.Drawing.Size(1211, 22);
+            this.testIPAddress.Size = new System.Drawing.Size(671, 22);
             this.testIPAddress.TabIndex = 0;
             this.testIPAddress.Text = "94.250.204.136";
             this.testIPAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.testIPAddress_KeyPress);
@@ -132,9 +137,9 @@
             this.graphs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.graphs.Location = new System.Drawing.Point(17, 542);
+            this.graphs.Location = new System.Drawing.Point(17, 564);
             this.graphs.Name = "graphs";
-            this.graphs.Size = new System.Drawing.Size(1323, 369);
+            this.graphs.Size = new System.Drawing.Size(1319, 347);
             this.graphs.TabIndex = 7;
             // 
             // buttonMRU
@@ -142,7 +147,7 @@
             this.buttonMRU.BackColor = System.Drawing.Color.Transparent;
             this.buttonMRU.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonMRU.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
-            this.buttonMRU.Location = new System.Drawing.Point(1197, 14);
+            this.buttonMRU.Location = new System.Drawing.Point(694, 14);
             this.buttonMRU.Margin = new System.Windows.Forms.Padding(2);
             this.buttonMRU.Name = "buttonMRU";
             this.buttonMRU.Size = new System.Drawing.Size(32, 24);
@@ -151,20 +156,77 @@
             this.buttonMRU.UseVisualStyleBackColor = false;
             this.buttonMRU.Click += new System.EventHandler(this.buttonMRU_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(957, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(144, 16);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Sample Window (mins)";
+            // 
+            // window
+            // 
+            this.window.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.window.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.window.FormattingEnabled = true;
+            this.window.Items.AddRange(new object[] {
+            "60 Seconds",
+            "5 Minutes",
+            "10 Minutes",
+            "15 Minutes",
+            "30 Minutes",
+            "60 Minutes",
+            "4 Hours",
+            "8 Hours",
+            "12 Hours",
+            "24 Hours",
+            "48 Hours"});
+            this.window.Location = new System.Drawing.Point(1107, 14);
+            this.window.Name = "window";
+            this.window.Size = new System.Drawing.Size(121, 24);
+            this.window.TabIndex = 12;
+            this.window.SelectedIndexChanged += new System.EventHandler(this.window_SelectedIndexChanged);
+            // 
+            // offsetBar
+            // 
+            this.offsetBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.offsetBar.Location = new System.Drawing.Point(17, 539);
+            this.offsetBar.Name = "offsetBar";
+            this.offsetBar.Size = new System.Drawing.Size(1318, 56);
+            this.offsetBar.TabIndex = 16;
+            this.offsetBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.offsetBar.Visible = false;
+            this.offsetBar.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // status
+            // 
+            this.status.AutoSize = true;
+            this.status.Location = new System.Drawing.Point(743, 19);
+            this.status.Name = "status";
+            this.status.Size = new System.Drawing.Size(0, 16);
+            this.status.TabIndex = 17;
+            // 
             // PlotPing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1352, 923);
+            this.Controls.Add(this.status);
+            this.Controls.Add(this.window);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonMRU);
             this.Controls.Add(this.graphs);
             this.Controls.Add(this.listViewTrace);
             this.Controls.Add(this.buttonGoNew);
             this.Controls.Add(this.testIPAddress);
             this.Controls.Add(this.formsPlot1);
+            this.Controls.Add(this.offsetBar);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "PlotPing";
             this.Text = "Plot Ping";
+            ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -183,6 +245,10 @@
         private System.Windows.Forms.ColumnHeader ave;
         private System.Windows.Forms.Panel graphs;
         private System.Windows.Forms.Button buttonMRU;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox window;
+        private System.Windows.Forms.TrackBar offsetBar;
+        private System.Windows.Forms.Label status;
     }
 }
 

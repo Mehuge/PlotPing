@@ -28,7 +28,7 @@ namespace PlotPingApp
             }
         }
 
-        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute)
+        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute, int offset, int windowSize)
         {
             plot.Plot.Clear();
 
@@ -37,35 +37,12 @@ namespace PlotPingApp
             double[] _latencies = hops.Select(t => (double)t.rtt).ToArray();
             Tick[] ticks = hops.Select(t => new Tick(t.hop, t.hop.ToString(), true, false)).ToArray();
 
-
             double last = 0;
-            double[] lower = hops.Select(t => {
-                MinMax mm = traceroute.GetMinMax(t.ipAddress);
-                if (mm != null) {
-                    last = mm.min;
-                    return (double) mm.min;
-                }
-                return last;
-            }).ToArray();
+            MinMax [] minmax = hops.Select(t => traceroute.GetMinMax(t.ipAddress)).ToArray();
 
-            double[] upper = hops.Select(t => {
-                MinMax mm = traceroute.GetMinMax(t.ipAddress);
-                if (mm != null) {
-                    last = mm.max;
-                    return (double) mm.max;
-                }
-                return last;
-            }).ToArray();
-
-            // TODO exclude missing hops from average line (means having sparse hops/average arrays)
-            double[] average = hops.Select(t => {
-                MinMax mm = traceroute.GetMinMax(t.ipAddress);
-                if (mm != null) {
-                    last = mm.ave;
-                    return mm.ave;
-                }
-                return last;
-            }).ToArray();
+            double[] lower = minmax.Select(x => x != null ? x.min : last).ToArray();
+            double[] upper = minmax.Select(x => x != null ? x.max : last).ToArray();
+            double[] average = minmax.Select(x => x != null ? x.ave : last).ToArray();
 
             long maxLatency = upper.Select(t => (long) t).Max();
             int latencyMax = (((int)(maxLatency / 30)) + 1) * 30;
@@ -98,31 +75,40 @@ namespace PlotPingApp
             poly.FillColor = Color.FromArgb(50, Color.Green);
             plot.Refresh();
         }
-        static int LIMIT = 60*15;
         static internal void RenderTraceOverTime(FormsPlot plot, Hop[][] hops, int hop, string title, int freq)
         {
-            Hop[][] filtered = hops.Length > LIMIT ? hops.Skip(hops.Length - LIMIT).ToArray() : hops;
+            int i = hop - 1;    // i is the hop being graphed
 
-            int i = hop - 1;
-            double[] hopLatencies = filtered.Select(x => (double) (i >= x.Length ? -1 : x[i].rtt)).ToArray();
-            double[] timeValues = filtered.Select(x => i >= x.Length ? x[x.Length-1].timestamp.ToOADate() : x[i].timestamp.ToOADate()).ToArray();
+            // Select all non-dropout hops, their latencies and time values
+            Hop[][] noDropouts = hops.Where(x => i < x.Length && x[i].rtt >= 0).ToArray();
+            double[] hopLatencies = noDropouts.Select(x => (double)x[i].rtt).ToArray();
+            double[] timeValues = noDropouts.Select(x => x[i].timestamp.ToOADate()).ToArray();
 
-            long maxLatency = (long) hopLatencies.Max();
-            int latencyMax = (((int)(maxLatency / 30)) + 1) * 30;
+            double latencyMax = hopLatencies.Length > 0 ? ((int)((hopLatencies.Max() / 30) + 1)) * 30 : 30;
 
-            double[] dropouts = filtered.Select(x => i >= x.Length || x[i].rtt < 0 ? (double) latencyMax : 0).ToArray();
+            // select all dropout hops, latencyMax and time values
+            Hop[][] dropouts = hops.Where(x => i < x.Length && x[i].rtt == -1).ToArray();
+            double[] dropoutBars = dropouts.Select(x => latencyMax).ToArray();
+            double[] dropoutTimes = dropouts.Select(x => x[i].timestamp.ToOADate()).ToArray();
 
             plot.Plot.Clear();
             plot.Plot.YAxis.SetInnerBoundary(0, latencyMax);
             plot.Plot.YAxis.SetBoundary(0, latencyMax);
             plot.Plot.XAxis.DateTimeFormat(true);
             plot.Plot.XAxis.TickLabelFormat(x => DateTime.FromOADate(x).ToString("HH:mm:ss"));
-            plot.Plot.AddScatter(timeValues, hopLatencies, markerSize: 2);
 
-            var bar = plot.Plot.AddBar(dropouts, timeValues);
-            bar.BarWidth = (1.0 / 86400) * (freq / 1000);
-            bar.FillColor = Color.Red;
-            bar.BorderLineWidth = 0;
+            if (hopLatencies.Length > 0)
+            {
+                plot.Plot.AddScatter(timeValues, hopLatencies, markerSize: 2);
+            }
+
+            if (dropoutBars.Length > 0)
+            {
+                var bar = plot.Plot.AddBar(dropoutBars, dropoutTimes);
+                bar.BarWidth = (1.0 / 86400) * (freq / 1000);
+                bar.FillColor = Color.Red;
+                bar.BorderLineWidth = 0;
+            }
 
             plot.Plot.Legend();
             plot.Plot.Title(title);
