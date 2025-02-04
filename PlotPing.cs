@@ -74,6 +74,7 @@ namespace PlotPingApp
             //traceroute?.Stop();
             traceroute?.StopBackground();
             selectedHops.Clear();
+            while (plotters.Count > 0) RemoveLatencyPlotter(0);
             buttonGoNew.Text = "Start";
             offsetBar.Visible = false;
         }
@@ -113,52 +114,62 @@ namespace PlotPingApp
             return plotter;
         }
 
+        private void RemoveLatencyPlotter(int i)
+        {
+            this.graphs.Controls.RemoveAt(i);
+            plotters.RemoveAt(i);
+        }
+
+        private void ResizePlotters()
+        {
+            if (selectedHops.Count == 0) return;
+            int h = this.graphs.Size.Height / selectedHops.Count;
+            if (h < 90) h = 90;
+            for (int i = 0; i < plotters.Count; i++)
+            {
+                plotters[i].Location = new Point(0, i * h);
+                plotters[i].Size = new Size(this.graphs.Size.Width, h);
+                plotters[i].Invalidate();
+            }
+        }
+
+        private void UpdatePlotters()
+        {
+            bool updated = false;
+            while (selectedHops.Count > plotters.Count)
+            {
+                GetLatencyPlotter(plotters.Count);
+                updated = true;
+            }
+
+            while (selectedHops.Count < plotters.Count)
+            {
+                RemoveLatencyPlotter(plotters.Count - 1);
+                updated = true;
+            }
+
+            if (updated)
+            {
+                ResizePlotters();
+                RenderHopTraces();
+            }
+        }
+
         private void RenderTrace(FormsPlot formsPlot1, ListView listViewTrace, Hop[] hops, Traceroute traceroute)
         {
             Hop[][] traces = traceroute.GetTraces();
 
             offsetBar.Visible = traces.Length > windowSize;
             offsetBar.Maximum = 0;
-            offsetBar.Minimum = -traces.Length;
+            offsetBar.Minimum = -(traces.Length - windowSize);
 
             // TODO: This needs to be filtered by window size
             Plotter.RenderTrace(formsPlot1, hops, traceroute, offset, windowSize);
 
-            if (traces.Length > windowSize)
-            {
-                int start = traces.Length - windowSize + offset;
-                Debug.Print("SKIP " + start + " TAKE " + windowSize + " FROM " + traces.Length);
-                traces = traces.Skip(start).Take(windowSize).ToArray();
-                Debug.Print("GIVES " + traces.Length);
-            }
-
-            if (selectedHops.Count == 0)
-            {
-                // auto select the last responding hop
-                int showHop = hops.Length;
-                if (hops[showHop - 1].rtt == -1) showHop--;
-                selectedHops.Add(showHop-1);
-                selectedHops.Add(showHop);
-                GetLatencyPlotter(0);           // add single graph
-                GetLatencyPlotter(1);           // add single graph
-            }
-
             RenderHopTraces();
-
-            /*
-            int i = 0;
-            selectedHops.ForEach(x =>
-            {
-                string title = x <= hops.Length ? hops[x-1].ipAddress : "";      // hop unreachable this trace
-                FormsPlot plotter = (FormsPlot)this.graphs.Controls[i++];
-                Plotter.RenderTraceOverTime(plotter, traces, x, title + " Latency (ms)", PING_FREQUENCY);
-            });
-            */
 
             listViewTrace.Items.Clear();
             listViewTrace.View = View.Details;
-
-            if (hops.Length > 0) Debug.Print("TRACE STARTED " + hops[0].timestamp.ToString("HH:mm:ss"));
 
             foreach (var hop in hops)
             {
@@ -166,7 +177,7 @@ namespace PlotPingApp
                 item.Tag = hop;
                 item.Text = $"{hop.hop}";
                 item.SubItems.Add(hop.ipAddress);
-                if (hop.rtt >= 0) item.SubItems.Add($"{hop.rtt} ms");
+                item.SubItems.Add(hop.rtt < 0 ? "*" : $"{hop.rtt} ms");
                 if (hop.ipAddress != null)
                 {
                     MinMax minmax = traceroute.GetMinMax(hop.ipAddress);
@@ -175,6 +186,8 @@ namespace PlotPingApp
                         item.SubItems.Add(minmax.min.ToString() + " ms");
                         item.SubItems.Add(minmax.max.ToString() + " ms");
                         item.SubItems.Add(((int)minmax.ave).ToString() + " ms");
+                        item.SubItems.Add(((double)minmax.pl / traces.Length * 100).ToString("n0"));
+                        var plot = item.SubItems.Add(selectedHops.Contains(hop.hop) ? "📊" : "");
                     }
                 }
                 listViewTrace.Items.Add(item);
@@ -184,8 +197,27 @@ namespace PlotPingApp
         private void RenderHopTraces()
         {
             if (traceroute == null) return;
+
             Hop[][] traces = traceroute.GetTraces();
             Hop[] hops = traces.Last();
+
+            if (traces.Length > windowSize)
+            {
+                int start = traces.Length - windowSize + offset;
+                traces = traces.Skip(start).Take(windowSize).ToArray();
+            }
+
+            if (selectedHops.Count == 0)
+            {
+                // auto select the last responding hop
+                int showHop = hops.Length;
+                if (hops[showHop - 1].rtt == -1) showHop--;
+                selectedHops.Add(showHop);
+                GetLatencyPlotter(0);           // add single graph
+            }
+
+            UpdatePlotters();
+
             int i = 0;
             selectedHops.ForEach(x =>
             {
@@ -299,7 +331,7 @@ namespace PlotPingApp
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(mruFilePath));
-                File.WriteAllLines(mruFilePath, mru.AsEnumerable().Reverse());
+                File.WriteAllLines(mruFilePath, mru);
             }
             catch { /* Handle file write errors if needed */ }
         }
@@ -311,7 +343,6 @@ namespace PlotPingApp
             mru.Add(text.Trim());
             while (mru.Count > MAX_MRU_COUNT)
                 mru.RemoveAt(0);
-            // SaveMRU();
         }
 
         private void ShowMRUMenu(Control anchor)
@@ -326,6 +357,7 @@ namespace PlotPingApp
                     StopTrace();
                     testIPAddress.Text = item;
                     StartTrace();
+                    AddToMRU(item);
                 };
                 mruMenu.Items.Add(menuItem);
             }
@@ -372,6 +404,33 @@ namespace PlotPingApp
             offset = offsetBar.Value;
             updateStatus();
             RenderHopTraces();
+        }
+
+        private void listViewTrace_MouseDown(object sender, MouseEventArgs e)
+        {
+            ListViewHitTestInfo hitTest = listViewTrace.HitTest(e.Location);
+            if (hitTest.SubItem != null)
+            {
+                int hop = int.Parse(hitTest.Item.Text);
+
+                if (hitTest.SubItem.Text == "📊")
+                {
+                    hitTest.SubItem.Text = "";
+                    selectedHops.Remove(hop);
+                    UpdatePlotters();
+                    return;
+                } 
+
+                hitTest.SubItem.Text = "📊";
+                selectedHops.Add(hop);
+                selectedHops.Sort();
+                UpdatePlotters();
+            }
+        }
+
+        private void PlotPing_Resize(object sender, EventArgs e)
+        {
+            ResizePlotters();
         }
     }
 }

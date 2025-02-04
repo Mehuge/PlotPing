@@ -38,6 +38,8 @@
             this.min = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.max = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ave = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.PL = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.plot = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.graphs = new System.Windows.Forms.Panel();
             this.buttonMRU = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -94,7 +96,9 @@
             this.RTT,
             this.min,
             this.max,
-            this.ave});
+            this.ave,
+            this.PL,
+            this.plot});
             this.listViewTrace.HideSelection = false;
             this.listViewTrace.Location = new System.Drawing.Point(17, 59);
             this.listViewTrace.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -106,6 +110,7 @@
             this.listViewTrace.View = System.Windows.Forms.View.List;
             this.listViewTrace.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.listViewTrace_DrawColumnHeader);
             this.listViewTrace.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.listViewTrace_DrawSubItem);
+            this.listViewTrace.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listViewTrace_MouseDown);
             // 
             // IPAddress
             // 
@@ -131,6 +136,18 @@
             // 
             this.ave.Text = "Ave";
             this.ave.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // PL
+            // 
+            this.PL.Text = "PL%";
+            this.PL.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.PL.Width = 30;
+            // 
+            // plot
+            // 
+            this.plot.Text = "Plot";
+            this.plot.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.plot.Width = 30;
             // 
             // graphs
             // 
@@ -197,7 +214,6 @@
             this.offsetBar.Size = new System.Drawing.Size(1318, 56);
             this.offsetBar.TabIndex = 16;
             this.offsetBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.offsetBar.Visible = false;
             this.offsetBar.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // status
@@ -226,6 +242,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "PlotPing";
             this.Text = "Plot Ping";
+            this.Resize += new System.EventHandler(this.PlotPing_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -249,6 +266,8 @@
         private System.Windows.Forms.ComboBox window;
         private System.Windows.Forms.TrackBar offsetBar;
         private System.Windows.Forms.Label status;
+        private System.Windows.Forms.ColumnHeader PL;
+        private System.Windows.Forms.ColumnHeader plot;
     }
 }
 

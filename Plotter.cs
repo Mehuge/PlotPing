@@ -61,10 +61,10 @@ namespace PlotPingApp
             // plot.Plot.AddScatter(_hops, _latencies, label: "Latency", markerSize: (float)0.1);
             plot.Plot.AddScatter(_hops, average, markerSize: (float)8, color: Color.OrangeRed, markerShape: MarkerShape.openCircle);
             plot.Plot.XLabel("Hop");
-            plot.Plot.XAxis.SetTicks(ticks); plot.Plot.YLabel("Latency (ms)");
+            plot.Plot.XAxis.SetTicks(ticks);
+            plot.Plot.YLabel("Latency (ms)");
             plot.Plot.YAxis.SetTicks(latencyAxis);
             plot.Plot.YAxis.AxisTicks.MinorTickVisible = false;
-            Debug.Print($"X Axis {1} to {hops.Length} Y Axis {0} to {latencyMax}");
             plot.Plot.SetAxisLimits(0.8, hops.Length > 2 ? hops.Length + 0.2: 2, 0, latencyMax);
             plot.Plot.Title("Traceroute Results");
             plot.Plot.Legend();
@@ -95,6 +95,9 @@ namespace PlotPingApp
             plot.Plot.YAxis.SetInnerBoundary(0, latencyMax);
             plot.Plot.YAxis.SetBoundary(0, latencyMax);
             plot.Plot.XAxis.DateTimeFormat(true);
+            plot.Plot.XAxis.TickDensity(1);
+            plot.Plot.XAxis.TickMarkColor(Color.DarkRed);
+            plot.Plot.XAxis.Ticks(true, true, true);
             plot.Plot.XAxis.TickLabelFormat(x => DateTime.FromOADate(x).ToString("HH:mm:ss"));
 
             if (hopLatencies.Length > 0)

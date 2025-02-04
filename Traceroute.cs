@@ -22,6 +22,7 @@ namespace PlotPingApp
         internal long min;
         internal long max;
         internal double ave;
+        internal long pl;
     }
 
     internal class Traceroute
@@ -146,13 +147,55 @@ namespace PlotPingApp
             return new IPAddress(addr);
         }
 
+        private void CalcMinMax(Hop hop, long samples)
+        {
+            if (hop.ipAddress == null)
+            {
+                return;
+            }
+            
+            MinMax mm;
+
+            // add new entry
+            if (!minmax.ContainsKey(hop.ipAddress))
+            {
+                minmax[hop.ipAddress] = mm = new MinMax();
+                if (hop.rtt >= 0)
+                {
+                    mm.ave = mm.min = mm.max = hop.rtt;
+                    mm.pl = 0;
+                    return;
+                }
+
+                mm.ave = mm.min = mm.max = -1;
+                mm.pl = 1;
+                return;
+            }
+
+            // Update existing entry
+            mm = minmax[hop.ipAddress];
+            if (hop.rtt >= 0)
+            {
+                if (hop.rtt < mm.min || mm.min == -1) mm.min = hop.rtt;
+                if (hop.rtt > mm.max || mm.max == -1) mm.max = hop.rtt;
+                samples -= mm.pl;
+                if (samples > 0)
+                {
+                    mm.ave = ((mm.ave * (samples - 1)) + hop.rtt) / samples;
+                }
+                return;
+            }
+            mm.pl++;
+        }
+
         private Hop[] Run() {
 
             List<Hop> hopList = new List<Hop>();
             string lastIp = null;
             int lastSuccess = 0;
+            DateTime now = DateTime.Now;
 
-            Debug.Print("TRACE IP {0}", this.ipAddress);
+            Debug.Print("TRACE IP {0}", this.ipAddress + " AT " + now.ToString("HH:mm:ss") + " SEQ " + traces.Count);
 
             for (int hop = 1; hop <= maxTTL; hop++)
             {
@@ -179,45 +222,31 @@ namespace PlotPingApp
                           reply.Status == IPStatus.Success ? reply.RoundtripTime 
                         : reply.Status == IPStatus.TtlExpired ? sw.ElapsedMilliseconds
                         : -1;
-                    hopData.ipAddress = reply.Address?.ToString() ?? null;
+                    hopData.ipAddress = reply.Address?.ToString() ?? (traces.Count > 0 ? traces.Last()[hop - 1].ipAddress : null);
                     lastIp = reply.Address?.ToString();
                     hopList.Add(hopData);
                 }
-                catch(Exception)
+                catch(Exception e)
                 {
                     sw.Stop();
-                    hopData.rtt = -1;
-                    hopData.ipAddress = "Unknown";
+                    hopData.rtt = -2;
+                    hopData.ipAddress = null;
                     hopList.Add(hopData);
+                    Debug.Print("EXCEPTION " + e.Message);
                     break;
                 }
 
-                if (hopData.ipAddress != null)
-                {
-                    MinMax mm;
-                    if (!minmax.ContainsKey(hopData.ipAddress))
-                    {
-                        minmax[hopData.ipAddress] = mm = new MinMax();
-                        mm.ave = mm.min = mm.max = hopData.rtt;
-                    }
-                    else
-                    {
-                        mm = minmax[hopData.ipAddress];
-                        if (hopData.rtt < mm.min) mm.min = hopData.rtt;
-                        if (hopData.rtt > mm.max) mm.max = hopData.rtt;
+                CalcMinMax(hopData, traces.Count + 1);
 
-                        mm.ave = ((mm.ave * (hopList.Count - 1)) + hopData.rtt) / hopList.Count;
-                    }
-                }
-
-                Debug.Print(" HOP {0} IP {1} TTL {2} RTT {3}ms MIN {4} MAX {5} AVE {6}",
+                Debug.Print("  HOP {0} IP {1} TTL {2} RTT {3}ms MIN {4} MAX {5} AVE {6} PL {7}",
                     hop,
                     hopData.ipAddress ?? "Request Timed Out",
                     this.options.Ttl,
-                    hopData.rtt,
+                    hopData.rtt < 0 ? "*" : hopData.rtt.ToString("D"),
                     hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].min.ToString(),
                     hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].max.ToString(),
-                    hopData.ipAddress == null ? "" : ((int)(minmax[hopData.ipAddress].ave)).ToString()
+                    hopData.ipAddress == null ? "" : ((int)(minmax[hopData.ipAddress].ave)).ToString(),
+                    minmax[hopData.ipAddress].pl.ToString()
                 );
 
                 if (hopData.rtt >= 0) lastSuccess = hop;
@@ -225,8 +254,6 @@ namespace PlotPingApp
                 if (hopData.ipAddress == this.ipAddress)
                     break;          // Finished tracing
             }
-
-            Debug.Print("TRACE COMPLETE");
 
             if (lastSuccess < hopList.Count - 1)
             {
