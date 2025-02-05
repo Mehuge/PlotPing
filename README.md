@@ -2,13 +2,19 @@
 
 Visual Network Trace
 
+![Screen Shot](documentation/images/ss.svg "Screen Shot")
+
 # TODO
 (x) Add support for selectable time window
 
 (x) Add display time window slider So for example need to be able to define the size (in time) of the window of samples to display and then use a slider to move that window around the available samples. 
 Time window size can be anything from 5/10 minutes to several days.
 
-  ( ) change so that when start time slider is not at 0, the displayed section stays fixed, at the moment it moves as new samples are added
+(x) MRU for host (with persistance)
+
+(x) Add ability to select which hops to show graphs for and auto-resize them (to a point) or allow graph panel to scroll
+
+( ) Latency graphs, when start time slider is not at 0, the displayed section should stay fixed, at the moment it moves as new samples are added
 
 ( ) add option of results graph to show min/max/ave/pl of time window rather than all samples (including start time, so showing historic data)
 
@@ -22,10 +28,8 @@ Time window size can be anything from 5/10 minutes to several days.
 
 ( ) Export trace option
 
-(x) MRU for host (with persistance)
-
-(x) Add ability to select which hops to show graphs for and auto-resize them (to a point) or allow graph panel to scroll
-
 ( ) Fix issue with selected hop graphs not being correct after starting ping to new host
 
 ( ) Add support for selectable ping frequency (min 5s due to technical limitations - default 5s)
+
+( ) Add resolver for IP addresses.  IP Address list (min/max list) could include host name field, updated in background thread.
