@@ -3,25 +3,29 @@
 Visual Network Trace
 
 # TODO
-[ ] Add support for selectable time window
+(x) Add support for selectable time window
 
-[ ] Add display time window slider So for example need to be able to define the size (in time) of the window of samples to display and then use a slider to move that window around the available samples. 
+(x) Add display time window slider So for example need to be able to define the size (in time) of the window of samples to display and then use a slider to move that window around the available samples. 
 Time window size can be anything from 5/10 minutes to several days.
 
-[ ] Fix latency bar on over time graphs, at short time windows the bar width isn't quite right.
+  ( ) change so that when start time slider is not at 0, the displayed section stays fixed, at the moment it moves as new samples are added
 
-[ ] Better ICMP engine. Need to be able to send out ICMP to each hop asynchronously, and the MS one `System.Net.NetworkInformation.Ping.Ping()` throws an exception when that is attempted.
+( ) add option of results graph to show min/max/ave/pl of time window rather than all samples (including start time, so showing historic data)
 
-[ ] Trace more than one IP at a time (tabs?)
+( ) add ability to click latency graph and results view shows that moment in time (and some way to reset to live)
 
-[ ] Export trace option
+( ) Fix latency bar on over time graphs, at very short time windows the bar width isn't quite right.
 
-[x] MRU for host (with persistance)
+( ) Better ICMP engine. Need to be able to send out ICMP to each hop asynchronously, and the MS one `System.Net.NetworkInformation.Ping.Ping()` throws an exception when that is attempted.
 
-[ ] Add ability to select which hops to show graphs for and auto-resize them (to a point) or allow graph panel to scroll
+( ) Trace more than one IP at a time (tabs?)
 
-[ ] Fix issue with selected hop graphs not being correct after starting ping to new host
+( ) Export trace option
 
-[ ] Active trace graph should only show min/max/ave for selected time window.
+(x) MRU for host (with persistance)
 
-[ ] Add support for selectable ping frequency (min 5s due to technical limitations - default 5s)
+(x) Add ability to select which hops to show graphs for and auto-resize them (to a point) or allow graph panel to scroll
+
+( ) Fix issue with selected hop graphs not being correct after starting ping to new host
+
+( ) Add support for selectable ping frequency (min 5s due to technical limitations - default 5s)
