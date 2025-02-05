@@ -2,7 +2,7 @@
 
 Visual Network Trace
 
-![Screen Shot][documentation/images/ss.png "Screen Shot"]
+![Plot Ping Screen Shot][documentation/images/ss.png "Screen Shot"]
 
 # TODO
 - [x] Add support for selectable time window
