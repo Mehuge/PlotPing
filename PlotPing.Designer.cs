@@ -154,7 +154,9 @@
             this.graphs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.graphs.AutoScroll = true;
             this.graphs.Location = new System.Drawing.Point(17, 564);
+            this.graphs.Margin = new System.Windows.Forms.Padding(0);
             this.graphs.Name = "graphs";
             this.graphs.Size = new System.Drawing.Size(1319, 347);
             this.graphs.TabIndex = 7;

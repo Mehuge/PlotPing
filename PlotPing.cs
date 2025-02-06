@@ -54,10 +54,12 @@ namespace PlotPingApp
             {
                 traceroute = new Traceroute(ipAddress);
             }
-            else if (traceroute.GetIPAddress() != ipAddress)
+            else if (traceroute.GetHostAddress() != ipAddress)
             {
                 traceroute.Clear();
-                traceroute.SetIPAddress(ipAddress);
+                traceroute.SetHostAddress(ipAddress);
+                selectedHops.Clear();
+                while (plotters.Count > 0) RemoveLatencyPlotter(0);
             }
 
             AddToMRU(ipAddress);
@@ -65,16 +67,12 @@ namespace PlotPingApp
 
             traceroute.OnTrace += Traceroute_OnTrace;
 
-            // traceroute.Start();
             Task.Run(() => { traceroute.StartBackground(PING_FREQUENCY); });
         }
 
         private void StopTrace()
         {
-            //traceroute?.Stop();
             traceroute?.StopBackground();
-            selectedHops.Clear();
-            while (plotters.Count > 0) RemoveLatencyPlotter(0);
             buttonGoNew.Text = "Start";
             offsetBar.Visible = false;
         }
@@ -95,12 +93,14 @@ namespace PlotPingApp
         {
             var plotter = new FormsPlot();
             int h = this.graphs.Size.Height / selectedHops.Count;
+            if (h < 90) h = 90;
             int y = (i * h);
-            plotter.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            int w = this.graphs.Width;
+            int margin = selectedHops.Count * h > this.graphs.Height ? 20 : 0;
             plotter.Location = new Point(0, y);
             plotter.Margin = new Padding(0, 0, 0, 0);
             plotter.Name = "latencyPlot" + i;
-            plotter.Size = new Size(this.graphs.Size.Width, h);
+            plotter.Size = new Size(w - margin, h);
             plotter.TabIndex = 6 + i;
             plotter.Plot.Margins(0, 0);
             plotter.Plot.XAxis.Color(Color.Gray);
@@ -122,13 +122,16 @@ namespace PlotPingApp
 
         private void ResizePlotters()
         {
+            this.graphs.AutoScrollPosition = new Point(0, 0);
             if (selectedHops.Count == 0) return;
             int h = this.graphs.Size.Height / selectedHops.Count;
+            int w = this.graphs.Width;
             if (h < 90) h = 90;
+            int margin = h * selectedHops.Count > this.graphs.Height ? 20 : 0;
             for (int i = 0; i < plotters.Count; i++)
             {
                 plotters[i].Location = new Point(0, i * h);
-                plotters[i].Size = new Size(this.graphs.Size.Width, h);
+                plotters[i].Size = new Size(w - margin, h);
                 plotters[i].Invalidate();
             }
         }
@@ -188,6 +191,7 @@ namespace PlotPingApp
                         item.SubItems.Add(((int)minmax.ave).ToString() + " ms");
                         item.SubItems.Add(((double)minmax.pl / traces.Length * 100).ToString("n0"));
                         var plot = item.SubItems.Add(selectedHops.Contains(hop.hop) ? "📊" : "");
+                        plot.Tag = "graph";
                     }
                 }
                 listViewTrace.Items.Add(item);
@@ -223,7 +227,7 @@ namespace PlotPingApp
             {
                 string title = x <= hops.Length ? hops[x - 1].ipAddress : "";      // hop unreachable this trace
                 FormsPlot plotter = (FormsPlot)this.graphs.Controls[i++];
-                Plotter.RenderTraceOverTime(plotter, traces, x, title + " Latency (ms)", PING_FREQUENCY);
+                Plotter.RenderTraceOverTime(plotter, traces, x, $"Hop {x} {title} Latency (ms)", PING_FREQUENCY);
             });
         }
 
@@ -267,18 +271,6 @@ namespace PlotPingApp
 
         private void listViewTrace_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
-            /*
-            if (e.ColumnIndex == 0)
-            {
-                // Color the first column header
-                e.Graphics.FillRectangle(Brushes.LightBlue, e.Bounds);
-            }
-            else if (e.ColumnIndex > 0)
-            {
-                e.Graphics.FillRectangle(Brushes.AntiqueWhite, e.Bounds);
-            }
-            */
-
             using (Pen borderPen = new Pen(Color.FromArgb(100, Color.Silver), (float)0.5))
             {
                 e.Graphics.DrawLine(borderPen, e.Bounds.Right-1, e.Bounds.Top, e.Bounds.Right-1, e.Bounds.Bottom);
@@ -289,15 +281,7 @@ namespace PlotPingApp
             TextFormatFlags align = TextFormatFlags.Left | TextFormatFlags.VerticalCenter;
             if (header.TextAlign == System.Windows.Forms.HorizontalAlignment.Right)
             {
-                // int textWidth = TextRenderer.MeasureText(e.Header.Text, e.Font).Width;
-                // int x = e.Bounds.Right - textWidth;
-                // bounds = new Rectangle(x, bounds.Top, textWidth, bounds.Height);
                 align = TextFormatFlags.Right | TextFormatFlags.VerticalCenter;
-            }
-            if (header.TextAlign == System.Windows.Forms.HorizontalAlignment.Right)
-            {
-                // int x = e.Bounds.Left;
-                // bounds = new Rectangle(x, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
             }
             TextRenderer.DrawText(e.Graphics, e.Header.Text, e.Font, bounds, Color.Black, align);
         }
@@ -409,7 +393,7 @@ namespace PlotPingApp
         private void listViewTrace_MouseDown(object sender, MouseEventArgs e)
         {
             ListViewHitTestInfo hitTest = listViewTrace.HitTest(e.Location);
-            if (hitTest.SubItem != null)
+            if (hitTest.SubItem != null && hitTest.SubItem.Tag != null && hitTest.SubItem.Tag.ToString() == "graph")
             {
                 int hop = int.Parse(hitTest.Item.Text);
 

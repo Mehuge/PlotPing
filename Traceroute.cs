@@ -46,10 +46,6 @@ namespace PlotPingApp
         public event TraceEventHandler OnTrace;
 
 
-        public string GetIPAddress() {
-            return ipAddress;
-        }
-
         public MinMax GetMinMax(string ip)
         {
             if (ip != null && minmax.ContainsKey(ip)) return minmax[ip];
@@ -87,7 +83,7 @@ namespace PlotPingApp
 
         public Traceroute(string hostOrIp) {
 
-            SetIPAddress(hostOrIp);
+            SetHostAddress(hostOrIp);
         }
 
         public void StartBackground(int interval = 5000)
@@ -246,7 +242,7 @@ namespace PlotPingApp
                     hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].min.ToString(),
                     hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].max.ToString(),
                     hopData.ipAddress == null ? "" : ((int)(minmax[hopData.ipAddress].ave)).ToString(),
-                    minmax[hopData.ipAddress].pl.ToString()
+                    hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].pl.ToString()
                 );
 
                 if (hopData.rtt >= 0) lastSuccess = hop;
@@ -274,11 +270,20 @@ namespace PlotPingApp
             return backgroundTimer != null;
         }
 
-        internal void SetIPAddress(string hostOrIp)
+        internal void SetHostAddress(string hostOrIp)
         {
             this.hostAddress = hostOrIp;
             this.ipAddress = ResolveToIPAddress(hostOrIp);
             Debug.Print(hostOrIp + " is " + this.ipAddress);
+        }
+
+        public string GetHostAddress() {
+            return hostAddress;
+        }
+
+        public string GetIPAddress()
+        {
+            return ipAddress;
         }
     }
 }
