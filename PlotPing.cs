@@ -107,7 +107,7 @@ namespace PlotPingApp
             plotter.Plot.XAxis.Layout(0, 0, 20);
             plotter.Plot.YAxis.Color(Color.Gray);
             plotter.Plot.YAxis.Layout(0, 0, 40);
-            plotter.BackColor = Color.FromArgb(10, Color.Black);
+            plotter.BackColor = Color.WhiteSmoke;
             plotter.Plot.Title("", false, Color.Gray, 10);
             plotters.Add(plotter);
             this.graphs.Controls.Add(plotter);
@@ -347,7 +347,7 @@ namespace PlotPingApp
             }
 
             int title = this.Size.Height - this.ClientRectangle.Height;
-            mruMenu.Show(new Point(this.Left + anchor.Left + anchor.Width - mruMenu.Width + 8, this.Top + title + anchor.Top + anchor.Height - 8));
+            mruMenu.Show(new Point(this.Left + anchor.Left + 8, this.Top + title + anchor.Top + anchor.Height - 8));
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -415,6 +415,23 @@ namespace PlotPingApp
         private void PlotPing_Resize(object sender, EventArgs e)
         {
             ResizePlotters();
+        }
+
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (IPAddress.Text.Length == 0) return;
+            StartTrace();
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StopTrace();
+        }
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            About about = new About();
+            about.ShowDialog();
         }
     }
 }
