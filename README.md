@@ -1,6 +1,4 @@
-# PlotPing
-
-Visual Network Trace
+# <img src="plotping-logo.jpeg" width="60" align="center"> PlotPing by Mehuge - A visual network trace
 
 ![Plot Ping Screen Shot](documentation/images/ss.png?raw=true "Screen Shot")
 
