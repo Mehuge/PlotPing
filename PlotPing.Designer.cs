@@ -171,7 +171,7 @@
             this.graphs.Location = new System.Drawing.Point(0, 564);
             this.graphs.Margin = new System.Windows.Forms.Padding(0);
             this.graphs.Name = "graphs";
-            this.graphs.Size = new System.Drawing.Size(1352, 362);
+            this.graphs.Size = new System.Drawing.Size(1352, 357);
             this.graphs.TabIndex = 7;
             // 
             // buttonMRU
