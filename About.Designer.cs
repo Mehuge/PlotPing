@@ -29,19 +29,20 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(About));
-            this.version = new System.Windows.Forms.Label();
+            this.product = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.version = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // version
+            // product
             // 
-            this.version.AutoSize = true;
-            this.version.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.version.Location = new System.Drawing.Point(343, 104);
-            this.version.Name = "version";
-            this.version.Size = new System.Drawing.Size(399, 54);
-            this.version.TabIndex = 3;
-            this.version.Text = "Plot Ping v 1.0.0.2";
+            this.product.AutoSize = true;
+            this.product.Font = new System.Drawing.Font("Microsoft Sans Serif", 28.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.product.Location = new System.Drawing.Point(343, 104);
+            this.product.Name = "product";
+            this.product.Size = new System.Drawing.Size(208, 54);
+            this.product.TabIndex = 3;
+            this.product.Text = "Plot Ping";
             // 
             // panel1
             // 
@@ -52,12 +53,23 @@
             this.panel1.Size = new System.Drawing.Size(257, 261);
             this.panel1.TabIndex = 2;
             // 
+            // version
+            // 
+            this.version.AutoSize = true;
+            this.version.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.version.Location = new System.Drawing.Point(346, 158);
+            this.version.Name = "version";
+            this.version.Size = new System.Drawing.Size(54, 32);
+            this.version.TabIndex = 4;
+            this.version.Text = "1.0";
+            // 
             // About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.version);
+            this.Controls.Add(this.product);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -75,7 +87,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Label version;
+        private System.Windows.Forms.Label product;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label version;
     }
 }

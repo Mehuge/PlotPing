@@ -21,7 +21,7 @@ namespace PlotPingApp
         public About()
         {
             InitializeComponent();
-            version.Text = "PlotPing v" + GetVersion();
+            version.Text = $"Version {GetVersion()}";
         }
     }
 }

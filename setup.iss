@@ -4,7 +4,7 @@
 #define MyAppName "Plot Ping"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "by Mehuge"
-#define MyAppURL "mehuge.sorcerer.co.uk"
+#define MyAppURL "https://github.com/mehuge/PlotPing"
 #define MyAppExeName "PlotPing.exe"
 
 [Setup]
