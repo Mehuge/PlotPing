@@ -34,17 +34,6 @@ namespace PlotPingApp
             Process.Start(new ProcessStartInfo(donationLink) { UseShellExecute = true });
         }
 
-        private void donate_MouseHover(object sender, EventArgs e)
-        {
-        }
 
-        private void donate_MouseEnter(object sender, EventArgs e)
-        {
-        }
-
-        private void donate_MouseLeave(object sender, EventArgs e)
-        {
-
-        }
     }
 }

@@ -79,9 +79,6 @@
             this.donate.TabIndex = 5;
             this.donate.UseVisualStyleBackColor = false;
             this.donate.Click += new System.EventHandler(this.donate_Click);
-            this.donate.MouseEnter += new System.EventHandler(this.donate_MouseEnter);
-            this.donate.MouseLeave += new System.EventHandler(this.donate_MouseLeave);
-            this.donate.MouseHover += new System.EventHandler(this.donate_MouseHover);
             // 
             // label1
             // 
