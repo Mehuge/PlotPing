@@ -184,7 +184,7 @@ namespace PlotPingApp
                 if (hop.ipAddress != null)
                 {
                     MinMax minmax = traceroute.GetMinMax(hop.ipAddress);
-                    if (minmax != null)
+                    if (minmax != null && minmax.min != -1)
                     {
                         item.SubItems.Add(minmax.min.ToString() + " ms");
                         item.SubItems.Add(minmax.max.ToString() + " ms");
