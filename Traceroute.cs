@@ -253,8 +253,8 @@ namespace PlotPingApp
 
             if (lastSuccess < hopList.Count - 1)
             {
-                hopList.RemoveRange(lastSuccess + 1, hopList.Count - lastSuccess - 1);
-                maxTTL = lastSuccess + 1;
+                // hopList.RemoveRange(lastSuccess + 1, hopList.Count - lastSuccess - 1);
+                // maxTTL = lastSuccess + 1;
             }
             else if (lastSuccess == hopList.Count && maxTTL < 30)
             {
