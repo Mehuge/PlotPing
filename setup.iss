@@ -6,6 +6,7 @@
 #define MyAppPublisher "by Mehuge"
 #define MyAppURL "https://github.com/mehuge/PlotPing"
 #define MyAppExeName "PlotPing.exe"
+#define MyAppFileName "PlotPing"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -36,8 +37,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "bin\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\Release\*.*"; DestDir: {app}; Flags: ignoreversion
+Source: "bin\Release\{#MyAppFileName}.*"; DestDir: {app}; Flags: ignoreversion
+Source: "bin\Release\*.dll"; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
