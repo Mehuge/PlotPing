@@ -15,6 +15,7 @@ namespace PlotPingApp
     {
         private MRU mru;
         private Traceroute traceroute = null;
+        private LogWriter logWriter = null;
         private int PING_FREQUENCY = 5000;
         private int windowSize = 900 / 5;
         private int offset = 0;
@@ -22,13 +23,15 @@ namespace PlotPingApp
         public PlotPing()
         {
             InitializeComponent();
-            formsPlot1.Margin = new Padding(0);
-            formsPlot1.Plot.XAxis.Color(Color.Gray);
-            formsPlot1.Plot.XAxis.Layout(0, 0, 40);
-            formsPlot1.Plot.YAxis.Color(Color.Gray);
-            formsPlot1.Plot.YAxis.Layout(0, 0, 40);
-            formsPlot1.Plot.Title(null, false, Color.Gray, 10);
-            formsPlot1.Invalidate();
+            liveView.Margin = new Padding(0);
+            liveView.Plot.XAxis.Color(Color.Gray);
+            liveView.Plot.XAxis.Layout(0, 0, 40);
+            liveView.Plot.YAxis.Color(Color.Gray);
+            liveView.Plot.YAxis.Layout(0, 0, 40);
+            liveView.Plot.Title(null, false, Color.Gray, 10);
+            liveView.Invalidate();
+
+            Settings.LoadSettings();
 
             // Load MRU
             mru = new MRU(Path.Combine(Path.GetDirectoryName(Application.UserAppDataPath), "mru.txt"), 25);
@@ -69,9 +72,25 @@ namespace PlotPingApp
             mru.Add(ipAddress);
             buttonGoNew.Text = "Stop";
 
+            if (logTrace.Checked)
+            {
+                StartLogging(traceroute.GetHostAddress());
+            }
+
             traceroute.OnTrace += Traceroute_OnTrace;
 
             Task.Run(() => { traceroute.StartBackground(PING_FREQUENCY); });
+        }
+
+        private void StartLogging(string host)
+        {
+            if (logWriter != null) logWriter.Close();
+
+            string logDir = Settings.LogOutputFolder;
+            if (logDir == "") return;           // no log dir, do nothing
+
+            string logFile = $"{logDir}\\{host}.pp";
+            logWriter = new LogWriter(logFile);
         }
 
         private void StopTrace()
@@ -86,7 +105,7 @@ namespace PlotPingApp
             this.BeginInvoke(new Action(() =>
             {
                 updateStatus();
-                RenderTrace(formsPlot1, listViewTrace, hops, traceroute);
+                RenderTrace(liveView, listViewTrace, hops, traceroute);
             }));
         }
 
@@ -169,6 +188,8 @@ namespace PlotPingApp
             offsetBar.Visible = traces.Length > windowSize;
             offsetBar.Maximum = 0;
             offsetBar.Minimum = -(traces.Length - windowSize);
+
+            if (logWriter != null) logWriter.WriteSample(traces.Length, hops, traceroute);
 
             // TODO: This needs to be filtered by window size
             Plotter.RenderTrace(formsPlot1, hops, traceroute, offset, windowSize);
@@ -300,6 +321,7 @@ namespace PlotPingApp
         {
             base.OnFormClosing(e);
             mru.Save();
+            Settings.SaveSettings();
         }
 
         private void window_SelectedIndexChanged(object sender, EventArgs e)
@@ -404,6 +426,27 @@ namespace PlotPingApp
             {
                 Export export = new Export(traceroute);
                 export.ExportTo(openFileDialog.FileName);
+            }
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings settings = new Settings();
+            settings.ShowDialog();
+        }
+
+        private void logTrace_CheckedChanged(object sender, EventArgs e)
+        {
+            if (logTrace.Checked)
+            {
+                if (logWriter == null) StartLogging(traceroute.GetHostAddress());
+                return;
+            }
+
+            if (logWriter != null)
+            {
+                logWriter.Close();
+                logWriter = null;
             }
         }
     }

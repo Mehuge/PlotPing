@@ -31,7 +31,7 @@
             System.Windows.Forms.ColumnHeader HOP;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlotPing));
             this.testIPAddress = new System.Windows.Forms.TextBox();
-            this.formsPlot1 = new ScottPlot.FormsPlot();
+            this.liveView = new ScottPlot.FormsPlot();
             this.buttonGoNew = new System.Windows.Forms.Button();
             this.listViewTrace = new System.Windows.Forms.ListView();
             this.IPAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -52,10 +52,12 @@
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logTrace = new System.Windows.Forms.CheckBox();
             HOP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -75,24 +77,24 @@
             this.testIPAddress.TabIndex = 0;
             this.testIPAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.testIPAddress_KeyPress);
             // 
-            // formsPlot1
+            // liveView
             // 
-            this.formsPlot1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.liveView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.formsPlot1.BackColor = System.Drawing.SystemColors.Window;
-            this.formsPlot1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.formsPlot1.Location = new System.Drawing.Point(670, 66);
-            this.formsPlot1.Margin = new System.Windows.Forms.Padding(7, 4, 7, 4);
-            this.formsPlot1.Name = "formsPlot1";
-            this.formsPlot1.Size = new System.Drawing.Size(682, 468);
-            this.formsPlot1.TabIndex = 3;
+            this.liveView.BackColor = System.Drawing.SystemColors.Window;
+            this.liveView.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.liveView.Location = new System.Drawing.Point(670, 66);
+            this.liveView.Margin = new System.Windows.Forms.Padding(7, 4, 7, 4);
+            this.liveView.Name = "liveView";
+            this.liveView.Size = new System.Drawing.Size(682, 468);
+            this.liveView.TabIndex = 3;
             // 
             // buttonGoNew
             // 
-            this.buttonGoNew.Location = new System.Drawing.Point(573, 33);
+            this.buttonGoNew.Location = new System.Drawing.Point(573, 31);
             this.buttonGoNew.Margin = new System.Windows.Forms.Padding(4);
             this.buttonGoNew.Name = "buttonGoNew";
-            this.buttonGoNew.Size = new System.Drawing.Size(98, 28);
+            this.buttonGoNew.Size = new System.Drawing.Size(98, 32);
             this.buttonGoNew.TabIndex = 5;
             this.buttonGoNew.Text = "Start";
             this.buttonGoNew.UseVisualStyleBackColor = true;
@@ -236,7 +238,7 @@
             // status
             // 
             this.status.AutoSize = true;
-            this.status.Location = new System.Drawing.Point(678, 37);
+            this.status.Location = new System.Drawing.Point(932, 38);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(0, 16);
             this.status.TabIndex = 17;
@@ -249,7 +251,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1352, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1352, 28);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -258,31 +260,39 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startToolStripMenuItem,
             this.stopToolStripMenuItem,
-            this.exportToolStripMenuItem});
+            this.exportToolStripMenuItem,
+            this.settingsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(58, 26);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
             this.fileToolStripMenuItem.Text = "Trace";
             // 
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // stopToolStripMenuItem
             // 
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
             this.stopToolStripMenuItem.Text = "Stop";
             this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
             this.exportToolStripMenuItem.Text = "Export ...";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
+            this.settingsToolStripMenuItem.Text = "Settings ...";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -291,7 +301,7 @@
             this.helpToolStripMenuItem,
             this.githubToolStripMenuItem});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(64, 26);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(64, 24);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // aboutToolStripMenuItem1
@@ -315,12 +325,24 @@
             this.githubToolStripMenuItem.Text = "Github";
             this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
             // 
+            // logTrace
+            // 
+            this.logTrace.AutoSize = true;
+            this.logTrace.Location = new System.Drawing.Point(678, 39);
+            this.logTrace.Name = "logTrace";
+            this.logTrace.Size = new System.Drawing.Size(91, 20);
+            this.logTrace.TabIndex = 19;
+            this.logTrace.Text = "Log Trace";
+            this.logTrace.UseVisualStyleBackColor = true;
+            this.logTrace.CheckedChanged += new System.EventHandler(this.logTrace_CheckedChanged);
+            // 
             // PlotPing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(1352, 923);
+            this.Controls.Add(this.logTrace);
             this.Controls.Add(this.status);
             this.Controls.Add(this.window);
             this.Controls.Add(this.label1);
@@ -329,9 +351,10 @@
             this.Controls.Add(this.listViewTrace);
             this.Controls.Add(this.buttonGoNew);
             this.Controls.Add(this.testIPAddress);
-            this.Controls.Add(this.formsPlot1);
+            this.Controls.Add(this.liveView);
             this.Controls.Add(this.offsetBar);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -349,7 +372,7 @@
         #endregion
 
         private System.Windows.Forms.TextBox testIPAddress;
-        private ScottPlot.FormsPlot formsPlot1;
+        private ScottPlot.FormsPlot liveView;
         private System.Windows.Forms.Button buttonGoNew;
         private System.Windows.Forms.ListView listViewTrace;
         private System.Windows.Forms.ColumnHeader IPAddress;
@@ -374,6 +397,8 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem githubToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.CheckBox logTrace;
     }
 }
 

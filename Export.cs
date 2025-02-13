@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PlotPingApp
 {
@@ -23,19 +24,20 @@ namespace PlotPingApp
                 int sequence = 0;
                 foreach (Hop[] hops in traceroute.GetTraces())
                 {
-                    export.WriteLine(sequence.ToString("D5") + " " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss zzz"));
-                    ExportHop(sequence++, export, hops);
+                    ExportSample(export, sequence++, hops, traceroute);
                 }
             }
         }
 
-        private void ExportHop(int sequence, StreamWriter export, Hop[] hops)
+        public static string[] ExportSample(int sequence, Hop[] hops, Traceroute traceroute)
         {
-            export.WriteLine("  HOP RTT MIN MAX AVE PL% IP");
+            List<string> result = new List<string>();
+            result.Add(sequence.ToString("D5") + " " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss zzz"));
+            result.Add("  HOP RTT MIN MAX AVE PL% IP");
             foreach (var hop in hops)
             {
                 MinMax minmax = traceroute.GetMinMax(hop.ipAddress);
-                export.WriteLine(String.Format(
+                result.Add(String.Format(
                     "  {0} {2} {3} {4} {5} {6} {1}",
                         hop.hop.ToString("D3"),
                         hop.ipAddress ?? "Request Timed Out",
@@ -45,6 +47,15 @@ namespace PlotPingApp
                         hop.ipAddress == null ? " * " : ((int)(minmax.ave)).ToString("D3"),
                         hop.ipAddress == null ? "100" : minmax.pl.ToString("D3")
                 ));
+            }
+            return result.ToArray();
+        }
+
+        public static void ExportSample(StreamWriter export, int sequence, Hop[] hops, Traceroute traceroute)
+        {
+            foreach (var item in ExportSample(sequence, hops, traceroute))
+            {
+                export.WriteLine(item);
             }
         }
     }
