@@ -13,10 +13,7 @@ namespace PlotPingApp
 {
     public partial class PlotPing : Form
     {
-        private List<string> mru = new List<string>();
-        private const int MAX_MRU_COUNT = 25;
-        private string mruFilePath;
-        private ContextMenuStrip mruMenu = new ContextMenuStrip();
+        private MRU mru;
         private Traceroute traceroute = null;
         private int PING_FREQUENCY = 5000;
         private int windowSize = 900 / 5;
@@ -34,8 +31,8 @@ namespace PlotPingApp
             formsPlot1.Invalidate();
 
             // Load MRU
-            mruFilePath = Path.Combine(Application.UserAppDataPath, "mru.txt");
-            LoadMRU();
+            mru = new MRU(Path.Combine(Path.GetDirectoryName(Application.UserAppDataPath), "mru.txt"), 25);
+            mru.Load();
 
             window.SelectedIndex = 4;
         }
@@ -45,6 +42,13 @@ namespace PlotPingApp
             bool start = buttonGoNew.Text == "Start";
             StopTrace();
             if (start) StartTrace();
+        }
+
+        public void Start(string ipAddress)
+        {
+            StopTrace();
+            testIPAddress.Text = ipAddress.Trim();
+            StartTrace();
         }
 
         private void StartTrace()
@@ -62,7 +66,7 @@ namespace PlotPingApp
                 while (plotters.Count > 0) RemoveLatencyPlotter(0);
             }
 
-            AddToMRU(ipAddress);
+            mru.Add(ipAddress);
             buttonGoNew.Text = "Stop";
 
             traceroute.OnTrace += Traceroute_OnTrace;
@@ -235,7 +239,7 @@ namespace PlotPingApp
         {
             if (e.KeyChar == (char)Keys.Return)
             {
-                AddToMRU(testIPAddress.Text.Trim());
+                mru.Add(testIPAddress.Text.Trim());
                 StopTrace();
                 StartTrace();
                 e.Handled = true; // Prevent system beep
@@ -288,72 +292,14 @@ namespace PlotPingApp
 
         private void buttonMRU_Click(object sender, EventArgs e)
         {
-            ShowMRUMenu(buttonMRU);
+            mru.Show(buttonMRU, this);
         }
 
-
-        private void LoadMRU()
-        {
-            try
-            {
-                if (File.Exists(mruFilePath))
-                {
-                    mru = File.ReadAllLines(mruFilePath)
-                        .Where(line => !string.IsNullOrWhiteSpace(line))
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .Reverse()
-                        .Take(MAX_MRU_COUNT)
-                        .Reverse() // Correct order for adding new items
-                        .ToList();
-                }
-            }
-            catch { /* Handle file read errors if needed */ }
-        }
-
-        private void SaveMRU()
-        {
-            try
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(mruFilePath));
-                File.WriteAllLines(mruFilePath, mru);
-            }
-            catch { /* Handle file write errors if needed */ }
-        }
-
-        private void AddToMRU(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) return;
-            mru.RemoveAll(s => s.Equals(text, StringComparison.OrdinalIgnoreCase));
-            mru.Add(text.Trim());
-            while (mru.Count > MAX_MRU_COUNT)
-                mru.RemoveAt(0);
-        }
-
-        private void ShowMRUMenu(Control anchor)
-        {
-            if (mru.Count == 0) return;
-            mruMenu.Items.Clear();
-            foreach (var item in mru.AsEnumerable().Reverse())
-            {
-                var menuItem = new ToolStripMenuItem(item);
-                menuItem.Click += (s, e) =>
-                {
-                    StopTrace();
-                    testIPAddress.Text = item;
-                    StartTrace();
-                    AddToMRU(item);
-                };
-                mruMenu.Items.Add(menuItem);
-            }
-
-            int title = this.Size.Height - this.ClientRectangle.Height;
-            mruMenu.Show(new Point(this.Left + anchor.Left + 8, this.Top + title + anchor.Top + anchor.Height - 8));
-        }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
-            SaveMRU();
+            mru.Save();
         }
 
         private void window_SelectedIndexChanged(object sender, EventArgs e)
@@ -432,6 +378,33 @@ namespace PlotPingApp
         {
             About about = new About();
             about.ShowDialog();
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenLink.Help();
+
+        }
+
+        private void githubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenLink.Github();
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Plot Ping Trace files (*.pp)|*.pp";
+            openFileDialog.Title = "Select where to export";
+            openFileDialog.Multiselect = false;
+            openFileDialog.CheckFileExists = false;
+
+            DialogResult result = openFileDialog.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                Export export = new Export(traceroute);
+                export.ExportTo(openFileDialog.FileName);
+            }
         }
     }
 }

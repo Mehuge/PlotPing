@@ -19,21 +19,17 @@ namespace PlotPingApp
             return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
-        private static string donationLink = "https://www.paypal.com/donate/?business=GU7TQQQ3FABSL&no_recurring=0&item_name=Every+coffee+%E2%98%95+you+send+fuels+the+next+version.%0AThank+you+for+being+part+of+our+journey%21&currency_code=GBP";
-
         public About()
         {
-
             InitializeComponent();
-            version.Text = $"Version {GetVersion()}";
+            string v = string.Join(".", GetVersion().Split('.').Take(3).ToArray());
+            version.Text = $"Version {v}";
         }
 
-        private void donate_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            // Open URL in the default browser
-            Process.Start(new ProcessStartInfo(donationLink) { UseShellExecute = true });
+            Donate donate = new Donate();
+            donate.ShowDialog();
         }
-
-
     }
 }

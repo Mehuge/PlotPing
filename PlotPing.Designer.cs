@@ -73,7 +73,6 @@
             this.testIPAddress.Name = "testIPAddress";
             this.testIPAddress.Size = new System.Drawing.Size(525, 22);
             this.testIPAddress.TabIndex = 0;
-            this.testIPAddress.Text = "94.250.204.136";
             this.testIPAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.testIPAddress_KeyPress);
             // 
             // formsPlot1
@@ -82,10 +81,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.formsPlot1.BackColor = System.Drawing.SystemColors.Window;
             this.formsPlot1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.formsPlot1.Location = new System.Drawing.Point(670, 62);
+            this.formsPlot1.Location = new System.Drawing.Point(670, 66);
             this.formsPlot1.Margin = new System.Windows.Forms.Padding(7, 4, 7, 4);
             this.formsPlot1.Name = "formsPlot1";
-            this.formsPlot1.Size = new System.Drawing.Size(682, 472);
+            this.formsPlot1.Size = new System.Drawing.Size(682, 468);
             this.formsPlot1.TabIndex = 3;
             // 
             // buttonGoNew
@@ -112,11 +111,11 @@
             this.PL,
             this.plot});
             this.listViewTrace.HideSelection = false;
-            this.listViewTrace.Location = new System.Drawing.Point(0, 62);
+            this.listViewTrace.Location = new System.Drawing.Point(0, 66);
             this.listViewTrace.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.listViewTrace.Name = "listViewTrace";
             this.listViewTrace.OwnerDraw = true;
-            this.listViewTrace.Size = new System.Drawing.Size(671, 472);
+            this.listViewTrace.Size = new System.Drawing.Size(671, 468);
             this.listViewTrace.TabIndex = 6;
             this.listViewTrace.UseCompatibleStateImageBehavior = false;
             this.listViewTrace.View = System.Windows.Forms.View.List;
@@ -266,22 +265,23 @@
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(148, 26);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // stopToolStripMenuItem
             // 
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(148, 26);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.stopToolStripMenuItem.Text = "Stop";
             this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(148, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.exportToolStripMenuItem.Text = "Export ...";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -305,12 +305,14 @@
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(136, 26);
             this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // githubToolStripMenuItem
             // 
             this.githubToolStripMenuItem.Name = "githubToolStripMenuItem";
             this.githubToolStripMenuItem.Size = new System.Drawing.Size(136, 26);
             this.githubToolStripMenuItem.Text = "Github";
+            this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
             // 
             // PlotPing
             // 
