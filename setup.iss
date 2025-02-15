@@ -25,7 +25,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
 OutputBaseFilename=PlotPingSetup
-SetupIconFile=D:\DEV\PlotPing\plotping-icon.ico
+SetupIconFile=D:\DEV\PlotPing\Images\plotping-icon.ico
 SolidCompression=yes
 WizardStyle=modern
 
