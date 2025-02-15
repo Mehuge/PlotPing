@@ -58,7 +58,7 @@
             this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.panel1.Location = new System.Drawing.Point(21, 23);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(300, 291);
+            this.panel1.Size = new System.Drawing.Size(300, 288);
             this.panel1.TabIndex = 2;
             // 
             // version
@@ -75,7 +75,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(640, 281);
+            this.button1.Location = new System.Drawing.Point(626, 279);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 32);
             this.button1.TabIndex = 5;
@@ -96,7 +96,7 @@
             // 
             this.linkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(335, 290);
+            this.linkLabel1.Location = new System.Drawing.Point(335, 295);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(164, 16);
             this.linkLabel1.TabIndex = 7;
@@ -107,7 +107,7 @@
             // 
             this.madeBy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.madeBy.AutoSize = true;
-            this.madeBy.Location = new System.Drawing.Point(335, 271);
+            this.madeBy.Location = new System.Drawing.Point(335, 276);
             this.madeBy.Name = "madeBy";
             this.madeBy.Size = new System.Drawing.Size(112, 16);
             this.madeBy.TabIndex = 8;
@@ -117,7 +117,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(727, 328);
+            this.ClientSize = new System.Drawing.Size(727, 333);
             this.Controls.Add(this.madeBy);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.button1);
