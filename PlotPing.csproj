@@ -165,7 +165,7 @@
     <Compile Include="Common\Export.cs" />
     <Compile Include="Common\LogWriter.cs" />
     <Compile Include="Common\MRU.cs" />
-    <Compile Include="Common\OpenLink.cs" />
+    <Compile Include="Common\Action.cs" />
     <Compile Include="MultiPing\MultiPing.cs">
       <SubType>Form</SubType>
     </Compile>

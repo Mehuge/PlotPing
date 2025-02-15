@@ -49,6 +49,7 @@
             this.status = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.plotPingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.plotPingToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.multiPingToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,7 +62,6 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logTrace = new System.Windows.Forms.CheckBox();
-            this.plotPingToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             HOP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -270,6 +270,13 @@
             this.plotPingToolStripMenuItem.Size = new System.Drawing.Size(82, 24);
             this.plotPingToolStripMenuItem.Text = "Plot Ping";
             // 
+            // plotPingToolStripMenuItem1
+            // 
+            this.plotPingToolStripMenuItem1.Name = "plotPingToolStripMenuItem1";
+            this.plotPingToolStripMenuItem1.Size = new System.Drawing.Size(261, 26);
+            this.plotPingToolStripMenuItem1.Text = "New Plot Ping Window...";
+            this.plotPingToolStripMenuItem1.Click += new System.EventHandler(this.plotPingToolStripMenuItem1_Click);
+            // 
             // multiPingToolStripMenuItem1
             // 
             this.multiPingToolStripMenuItem1.Name = "multiPingToolStripMenuItem1";
@@ -299,26 +306,26 @@
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(148, 26);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // stopToolStripMenuItem
             // 
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(148, 26);
             this.stopToolStripMenuItem.Text = "Stop";
             this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(221, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(145, 6);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(148, 26);
             this.exportToolStripMenuItem.Text = "Export ...";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
@@ -364,13 +371,6 @@
             this.logTrace.UseVisualStyleBackColor = true;
             this.logTrace.CheckedChanged += new System.EventHandler(this.logTrace_CheckedChanged);
             // 
-            // plotPingToolStripMenuItem1
-            // 
-            this.plotPingToolStripMenuItem1.Name = "plotPingToolStripMenuItem1";
-            this.plotPingToolStripMenuItem1.Size = new System.Drawing.Size(261, 26);
-            this.plotPingToolStripMenuItem1.Text = "New Plot Ping Window...";
-            this.plotPingToolStripMenuItem1.Click += new System.EventHandler(this.plotPingToolStripMenuItem1_Click);
-            // 
             // PlotPing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -394,6 +394,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "PlotPing";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Plot Ping";
             this.Resize += new System.EventHandler(this.PlotPing_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).EndInit();

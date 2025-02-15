@@ -15,16 +15,17 @@ namespace PlotPingApp
         public MultiPing()
         {
             InitializeComponent();
+            Settings.RestoreFormLocation(this);
         }
 
         private void multiPingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Program.RunWithArgs("--start PlotPing");
+            Action.StartPlotPing();
         }
 
         private void multiPingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Program.RunWithArgs("--start MultiPing");
+            Action.StartMultiPing();
         }
     }
 }

@@ -32,6 +32,7 @@ namespace PlotPingApp
             liveView.Invalidate();
 
             Settings.LoadSettings();
+            Settings.RestoreFormLocation(this);
 
             // multiPingToolStripMenuItem1.Visible = Debugger.IsAttached;
 
@@ -104,7 +105,7 @@ namespace PlotPingApp
 
         private void Traceroute_OnTrace(object sender, Hop[] hops)
         {
-            this.BeginInvoke(new Action(() =>
+            this.BeginInvoke(new System.Action(() =>
             {
                 updateStatus();
                 RenderTrace(liveView, listViewTrace, hops, traceroute);
@@ -406,13 +407,13 @@ namespace PlotPingApp
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenLink.Help();
+            Action.ShowHelp();
 
         }
 
         private void githubToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenLink.Github();
+            Action.OpenGitHub();
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -433,8 +434,7 @@ namespace PlotPingApp
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Settings settings = new Settings();
-            settings.ShowDialog();
+            Action.ShowSettings();
         }
 
         private void logTrace_CheckedChanged(object sender, EventArgs e)
@@ -454,12 +454,12 @@ namespace PlotPingApp
 
         private void multiPingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Program.RunWithArgs("--start MultiPing");
+            Action.StartMultiPing();
         }
 
         private void plotPingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Program.RunWithArgs("--start PlotPing");
+            Action.StartPlotPing();
         }
     }
 }

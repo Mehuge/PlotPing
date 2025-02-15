@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -22,23 +23,23 @@ namespace PlotPingApp
         private static Dictionary<string, string> settings = new Dictionary<string, string>()
         {
             // Default settings
-            ["LogOutputFolder"] = appData,
+            ["LogOutputFolder"] = GetDefaultLogOutputFolder()
         };
 
-        private static string Get(string key)
+        internal static string Get(string key)
         {
             string value;
             return settings.TryGetValue(key, out value) ? value : null;
         }
 
-        private static void Set(string key, string value)
+        internal static void Set(string key, string value)
         {
             settings[key] = value;
         }
 
-        public static string LogOutputFolder { get { return Get("LogOutputFolder"); } set { Set("LogOutputFolder", value); } }
+        internal static string LogOutputFolder { get { return Get("LogOutputFolder"); } set { Set("LogOutputFolder", value); } }
 
-        public static void LoadSettings()
+        internal static void LoadSettings()
         {
             try
             {
@@ -50,13 +51,13 @@ namespace PlotPingApp
             }
         }
 
-        public static void SaveSettings()
+        internal static void SaveSettings()
         {
-            string json = JsonConvert.SerializeObject(settings);
+            string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
             File.WriteAllText(Path.Combine(appData, "settings.json"), json);
         }
 
-        public Settings()
+        internal Settings()
         {
             InitializeComponent();
             LoadSettings();
@@ -67,8 +68,8 @@ namespace PlotPingApp
             }
         }
 
-        private string GetDefaultLogOutputFolder() {
-            return Path.Combine(Path.GetDirectoryName(Application.UserAppDataPath));
+        private static string GetDefaultLogOutputFolder() {
+            return appData;
         }
 
         private void selectFolderButton_Click(object sender, EventArgs e)
@@ -83,6 +84,25 @@ namespace PlotPingApp
 
         private void Settings_FormClosing(object sender, FormClosingEventArgs e)
         {
+            SaveSettings();
+        }
+
+        internal static void RestoreFormLocation(Form form)
+        {
+            LoadSettings();
+            string bounds = Get(form.Name + ".Bounds");
+            if (bounds != null)
+            {
+                Rectangle rect = JsonConvert.DeserializeObject<Rectangle>(bounds);
+                form.Location = rect.Location;
+                form.Size = rect.Size;
+            }
+        }
+
+        internal static void SaveFormLocation(Form form)
+        {
+            LoadSettings();
+            Set(form.Name + ".Bounds", JsonConvert.SerializeObject(form.Bounds));
             SaveSettings();
         }
     }

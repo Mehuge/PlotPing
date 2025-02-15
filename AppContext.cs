@@ -55,6 +55,8 @@ namespace PlotPingApp
 
         private void FormClosedHandler(object sender, FormClosedEventArgs e)
         {
+            Settings.SaveFormLocation((Form)sender);
+
             if (Application.OpenForms.Count < 1)
             {
                 ExitThread();
