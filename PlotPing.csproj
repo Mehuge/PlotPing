@@ -79,7 +79,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>plotping-icon.ico</ApplicationIcon>
+    <ApplicationIcon>Images\plotping-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HarfBuzzSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -149,45 +149,55 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="About.cs">
+    <Compile Include="AppContext.cs" />
+    <Compile Include="Common\About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="About.Designer.cs">
+    <Compile Include="Common\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Donate.cs">
+    <Compile Include="Common\Donate.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Donate.Designer.cs">
+    <Compile Include="Common\Donate.Designer.cs">
       <DependentUpon>Donate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Export.cs" />
-    <Compile Include="LogWriter.cs" />
-    <Compile Include="MRU.cs" />
-    <Compile Include="OpenLink.cs" />
-    <Compile Include="PlotPing.cs">
+    <Compile Include="Common\Export.cs" />
+    <Compile Include="Common\LogWriter.cs" />
+    <Compile Include="Common\MRU.cs" />
+    <Compile Include="Common\OpenLink.cs" />
+    <Compile Include="MultiPing\MultiPing.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PlotPing.Designer.cs">
+    <Compile Include="MultiPing\MultiPing.Designer.cs">
+      <DependentUpon>MultiPing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlotPing\PlotPing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlotPing\PlotPing.Designer.cs">
       <DependentUpon>PlotPing.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plotter.cs" />
+    <Compile Include="Common\Plotter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs">
+    <Compile Include="Common\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Settings.Designer.cs">
+    <Compile Include="Common\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Traceroute.cs" />
-    <EmbeddedResource Include="About.resx">
+    <Compile Include="PlotPing\Traceroute.cs" />
+    <EmbeddedResource Include="Common\About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Donate.resx">
+    <EmbeddedResource Include="Common\Donate.resx">
       <DependentUpon>Donate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PlotPing.resx">
+    <EmbeddedResource Include="MultiPing\MultiPing.resx">
+      <DependentUpon>MultiPing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlotPing\PlotPing.resx">
       <DependentUpon>PlotPing.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -200,12 +210,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Settings.resx">
+    <EmbeddedResource Include="Common\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="PlotPing_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -233,11 +242,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="plotping-icon.ico" />
-    <Content Include="plotping-logo.jpeg" />
-    <Content Include="plotping-icon.jpg" />
+    <Content Include="Images\plotping-icon.ico" />
+    <Content Include="Images\plotping-logo.jpeg" />
+    <Content Include="Images\plotping-icon.jpg" />
     <Content Include="setup.iss" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\HarfBuzzSharp.NativeAssets.macOS.7.3.0.3\build\net462\HarfBuzzSharp.NativeAssets.macOS.targets" Condition="Exists('packages\HarfBuzzSharp.NativeAssets.macOS.7.3.0.3\build\net462\HarfBuzzSharp.NativeAssets.macOS.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

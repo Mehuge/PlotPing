@@ -33,6 +33,8 @@ namespace PlotPingApp
 
             Settings.LoadSettings();
 
+            // multiPingToolStripMenuItem1.Visible = Debugger.IsAttached;
+
             // Load MRU
             mru = new MRU(Path.Combine(Path.GetDirectoryName(Application.UserAppDataPath), "mru.txt"), 25);
             mru.Load();
@@ -448,6 +450,16 @@ namespace PlotPingApp
                 logWriter.Close();
                 logWriter = null;
             }
+        }
+
+        private void multiPingToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Program.RunWithArgs("--start MultiPing");
+        }
+
+        private void plotPingToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Program.RunWithArgs("--start PlotPing");
         }
     }
 }

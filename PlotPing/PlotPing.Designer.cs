@@ -48,16 +48,20 @@
             this.offsetBar = new System.Windows.Forms.TrackBar();
             this.status = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.plotPingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.multiPingToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logTrace = new System.Windows.Forms.CheckBox();
+            this.plotPingToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             HOP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -247,6 +251,7 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.plotPingToolStripMenuItem,
             this.fileToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -255,13 +260,38 @@
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // plotPingToolStripMenuItem
+            // 
+            this.plotPingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.plotPingToolStripMenuItem1,
+            this.multiPingToolStripMenuItem1,
+            this.settingsToolStripMenuItem});
+            this.plotPingToolStripMenuItem.Name = "plotPingToolStripMenuItem";
+            this.plotPingToolStripMenuItem.Size = new System.Drawing.Size(82, 24);
+            this.plotPingToolStripMenuItem.Text = "Plot Ping";
+            // 
+            // multiPingToolStripMenuItem1
+            // 
+            this.multiPingToolStripMenuItem1.Name = "multiPingToolStripMenuItem1";
+            this.multiPingToolStripMenuItem1.Size = new System.Drawing.Size(261, 26);
+            this.multiPingToolStripMenuItem1.Text = "New Multi Ping Window...";
+            this.multiPingToolStripMenuItem1.Visible = false;
+            this.multiPingToolStripMenuItem1.Click += new System.EventHandler(this.multiPingToolStripMenuItem1_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(261, 26);
+            this.settingsToolStripMenuItem.Text = "Settings ...";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startToolStripMenuItem,
             this.stopToolStripMenuItem,
-            this.exportToolStripMenuItem,
-            this.settingsToolStripMenuItem});
+            this.toolStripSeparator2,
+            this.exportToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(58, 24);
             this.fileToolStripMenuItem.Text = "Trace";
@@ -269,30 +299,28 @@
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // stopToolStripMenuItem
             // 
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.stopToolStripMenuItem.Text = "Stop";
             this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(221, 6);
             // 
             // exportToolStripMenuItem
             // 
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            this.exportToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.exportToolStripMenuItem.Text = "Export ...";
             this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
-            // 
-            // settingsToolStripMenuItem
-            // 
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(158, 26);
-            this.settingsToolStripMenuItem.Text = "Settings ...";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -335,6 +363,13 @@
             this.logTrace.Text = "Log Trace";
             this.logTrace.UseVisualStyleBackColor = true;
             this.logTrace.CheckedChanged += new System.EventHandler(this.logTrace_CheckedChanged);
+            // 
+            // plotPingToolStripMenuItem1
+            // 
+            this.plotPingToolStripMenuItem1.Name = "plotPingToolStripMenuItem1";
+            this.plotPingToolStripMenuItem1.Size = new System.Drawing.Size(261, 26);
+            this.plotPingToolStripMenuItem1.Text = "New Plot Ping Window...";
+            this.plotPingToolStripMenuItem1.Click += new System.EventHandler(this.plotPingToolStripMenuItem1_Click);
             // 
             // PlotPing
             // 
@@ -397,8 +432,12 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem githubToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.CheckBox logTrace;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem plotPingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem multiPingToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem plotPingToolStripMenuItem1;
     }
 }
 
