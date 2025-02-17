@@ -65,7 +65,7 @@ namespace PlotPingApp
             plot.Plot.YLabel("Latency (ms)");
             plot.Plot.YAxis.SetTicks(latencyAxis);
             plot.Plot.YAxis.AxisTicks.MinorTickVisible = false;
-            plot.Plot.SetAxisLimits(0.8, hops.Length > 2 ? hops.Length + 0.2: 2, 0, latencyMax);
+            plot.Plot.SetAxisLimits(0.8, hops.Length + 0.2, 0, latencyMax);
             plot.Plot.Title("Traceroute Results");
             plot.Plot.Legend();
 
