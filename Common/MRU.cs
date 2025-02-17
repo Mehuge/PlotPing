@@ -58,8 +58,9 @@ namespace PlotPingApp
                 mru.RemoveAt(0);
         }
 
-        internal void Show(Control anchor, PlotPing app)
+        internal void Show(Control anchor, Form app, Action<string> OnSelected)
         {
+            Load();
             if (mru.Count == 0) return;
             mruMenu.Items.Clear();
             foreach (var item in mru.AsEnumerable().Reverse())
@@ -67,7 +68,7 @@ namespace PlotPingApp
                 var menuItem = new ToolStripMenuItem(item);
                 menuItem.Click += (s, e) =>
                 {
-                    app.Start(item);
+                    OnSelected(item);
                     Add(item);
                 };
                 mruMenu.Items.Add(menuItem);

@@ -38,7 +38,6 @@ namespace PlotPingApp
 
             // Load MRU
             mru = new MRU(Path.Combine(Path.GetDirectoryName(Application.UserAppDataPath), "mru.txt"), 25);
-            mru.Load();
 
             window.SelectedIndex = 4;
         }
@@ -73,6 +72,7 @@ namespace PlotPingApp
             }
 
             mru.Add(ipAddress);
+            mru.Save();
             buttonGoNew.Text = "Stop";
 
             if (logTrace.Checked)
@@ -316,9 +316,8 @@ namespace PlotPingApp
 
         private void buttonMRU_Click(object sender, EventArgs e)
         {
-            mru.Show(buttonMRU, this);
+            mru.Show(buttonMRU, this, (string ipAddress) => { this.Start(ipAddress); });
         }
-
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

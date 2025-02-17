@@ -89,7 +89,6 @@ namespace PlotPingApp
 
         internal static void RestoreFormLocation(Form form)
         {
-            LoadSettings();
             string bounds = Get(form.Name + ".Bounds");
             if (bounds != null)
             {
