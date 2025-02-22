@@ -1,4 +1,4 @@
-# <img src="Images\plotping-logo.jpeg" width="60" align="center"> PlotPing by Mehuge - Your Network’s Pulse, Visualized
+# <img src="Images\plotping-logo.jpeg" width="60" align="center"> PlotPing, Your Network’s Pulse, Visualized
 
 ## Monitor, Diagnose, and Optimize Networks in Real Time
 
