@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using PlotPingApp.Common;
 
 namespace PlotPingApp
 {
@@ -22,7 +23,7 @@ namespace PlotPingApp
         internal long min;
         internal long max;
         internal double ave;
-        internal long pl;
+        internal int pl;
     }
 
     internal class Traceroute
@@ -39,7 +40,7 @@ namespace PlotPingApp
         private System.Threading.Timer backgroundTimer;
 
         private List<Hop[]> traces = new List<Hop[]>();
-        private Dictionary<string, MinMax> minmax = new Dictionary<string, MinMax>();
+        private MinMaxTracker minmax = new MinMaxTracker();
         private bool running;
 
         public delegate void TraceEventHandler(object sender, Hop[] hops);
@@ -48,8 +49,7 @@ namespace PlotPingApp
 
         public MinMax GetMinMax(string ip)
         {
-            if (ip != null && minmax.ContainsKey(ip)) return minmax[ip];
-            return null;
+            return minmax.Get(ip);
         }
 
         public Hop[][] GetTraces()
@@ -143,47 +143,6 @@ namespace PlotPingApp
             return new IPAddress(addr);
         }
 
-        private void CalcMinMax(Hop hop, long samples)
-        {
-            if (hop.ipAddress == null)
-            {
-                return;
-            }
-            
-            MinMax mm;
-
-            // add new entry
-            if (!minmax.ContainsKey(hop.ipAddress))
-            {
-                minmax[hop.ipAddress] = mm = new MinMax();
-                if (hop.rtt >= 0)
-                {
-                    mm.ave = mm.min = mm.max = hop.rtt;
-                    mm.pl = 0;
-                    return;
-                }
-
-                mm.ave = mm.min = mm.max = -1;
-                mm.pl = 1;
-                return;
-            }
-
-            // Update existing entry
-            mm = minmax[hop.ipAddress];
-            if (hop.rtt >= 0)
-            {
-                if (hop.rtt < mm.min || mm.min == -1) mm.min = hop.rtt;
-                if (hop.rtt > mm.max || mm.max == -1) mm.max = hop.rtt;
-                samples -= mm.pl;
-                if (samples > 0)
-                {
-                    mm.ave = ((mm.ave * (samples - 1)) + hop.rtt) / samples;
-                }
-                return;
-            }
-            mm.pl++;
-        }
-
         private Hop[] Run() {
 
             List<Hop> hopList = new List<Hop>();
@@ -232,17 +191,17 @@ namespace PlotPingApp
                     break;
                 }
 
-                CalcMinMax(hopData, traces.Count + 1);
+                MinMax mm = minmax.Track(hopData, traces.Count + 1);
 
                 Debug.Print("  HOP {0} IP {1} TTL {2} RTT {3}ms MIN {4} MAX {5} AVE {6} PL {7}",
                     hop,
                     hopData.ipAddress ?? "Request Timed Out",
                     this.options.Ttl,
                     hopData.rtt < 0 ? "*" : hopData.rtt.ToString("D"),
-                    hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].min.ToString(),
-                    hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].max.ToString(),
-                    hopData.ipAddress == null ? "" : ((int)(minmax[hopData.ipAddress].ave)).ToString(),
-                    hopData.ipAddress == null ? "" : minmax[hopData.ipAddress].pl.ToString()
+                    mm == null ? "*" : mm.min.ToString(),
+                    mm == null ? "*" : mm.max.ToString(),
+                    mm == null ? "*" : ((int)(mm.ave)).ToString(),
+                    mm == null ? "*" : mm.pl.ToString()
                 );
 
                 if (hopData.rtt >= 0) lastSuccess = hop;

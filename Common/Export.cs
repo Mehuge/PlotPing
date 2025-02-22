@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlotPingApp.Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,9 @@ namespace PlotPingApp
 {
     internal class Export
     {
-        Traceroute traceroute = null;
+        private Traceroute traceroute = null;
+        private static MinMaxTracker minmax = null;
+
         public Export(Traceroute traceroute)
         {
             this.traceroute = traceroute;
@@ -22,11 +25,17 @@ namespace PlotPingApp
             {
                 export.WriteLine($"TRACE {traceroute.GetHostAddress()}");
                 int sequence = 0;
+                StartExport();
                 foreach (Hop[] hops in traceroute.GetTraces())
                 {
                     ExportSample(export, sequence++, hops, traceroute);
                 }
             }
+        }
+
+        public static void StartExport()
+        {
+            minmax = new MinMaxTracker();
         }
 
         public static string[] ExportSample(int sequence, Hop[] hops, Traceroute traceroute)
@@ -36,16 +45,16 @@ namespace PlotPingApp
             result.Add("  HOP RTT MIN MAX AVE PL% IP");
             foreach (var hop in hops)
             {
-                MinMax minmax = traceroute.GetMinMax(hop.ipAddress);
+                MinMax mm = minmax.Track(hop, sequence);
                 result.Add(String.Format(
                     "  {0} {2} {3} {4} {5} {6} {1}",
                         hop.hop.ToString("D3"),
                         hop.ipAddress ?? "Request Timed Out",
-                        hop.rtt < 0           ? " * " : hop.rtt.ToString("D3"),
-                        hop.ipAddress == null ? " * " : minmax.min.ToString("D3"),
-                        hop.ipAddress == null ? " * " : minmax.max.ToString("D3"),
-                        hop.ipAddress == null ? " * " : ((int)(minmax.ave)).ToString("D3"),
-                        hop.ipAddress == null ? "100" : minmax.pl.ToString("D3")
+                        hop.rtt < 0 ? " * " : hop.rtt.ToString("D3"),
+                        mm == null ? " * " : mm.min.ToString("D3"),
+                        mm == null ? " * " : mm.max.ToString("D3"),
+                        mm == null ? " * " : ((int)(mm.ave)).ToString("D3"),
+                        mm == null ? " * " : mm.pl.ToString("D3")
                 ));
             }
             return result.ToArray();
