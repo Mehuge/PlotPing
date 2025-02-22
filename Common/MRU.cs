@@ -51,6 +51,7 @@ namespace PlotPingApp
         
         internal void Add(string text)
         {
+            Load();                                     // we can have multiple plot pings open, each updating the mru, so always load before adding.
             if (string.IsNullOrWhiteSpace(text)) return;
             mru.RemoveAll(s => s.Equals(text, StringComparison.OrdinalIgnoreCase));
             mru.Add(text.Trim());
