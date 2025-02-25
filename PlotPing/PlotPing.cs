@@ -8,6 +8,7 @@ using System.Diagnostics;
 using ListView = System.Windows.Forms.ListView;
 using System.IO;
 using System.Linq;
+using PlotPingApp.Common;
 
 namespace PlotPingApp
 {
@@ -93,7 +94,7 @@ namespace PlotPingApp
             if (logDir == "") return;           // no log dir, do nothing
 
             string logFile = $"{logDir}\\{host}.pp";
-            logWriter = new LogWriter(logFile);
+            logWriter = new LogWriter(logFile, traceroute.GetMinMaxTracker());
         }
 
         private void StopTrace()

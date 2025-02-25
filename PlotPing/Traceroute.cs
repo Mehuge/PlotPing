@@ -52,6 +52,11 @@ namespace PlotPingApp
             return minmax.Get(ip);
         }
 
+        public MinMaxTracker GetMinMaxTracker()
+        {
+            return minmax;
+        }
+
         public Hop[][] GetTraces()
         {
             return traces.ToArray();

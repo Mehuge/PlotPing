@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlotPingApp.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,24 +13,28 @@ namespace PlotPingApp
         private string logFile;
         private bool append = true;
         public StreamWriter stream;
+        private MinMaxTracker minmax;
+        private Export exporter;
 
-        public LogWriter(string logFile)
+        public LogWriter(string logFile, MinMaxTracker minmax)
         {
             this.logFile = logFile;
+            this.minmax = minmax;
         }
 
-        private void Open()
+        private void Open(Traceroute traceroute)
         {
             if (stream == null)
             {
                 stream = new StreamWriter(logFile, append);
+                exporter = new Export(traceroute, minmax);
             }
         }
 
         internal void WriteSample(int sequence, Hop[] hops, Traceroute traceroute)
         {
-            Open();
-            Export.ExportSample(stream, sequence, hops, traceroute);
+            Open(traceroute);
+            exporter.ExportSample(stream, sequence, hops, traceroute);
             stream.Flush();
         }
 

@@ -13,11 +13,14 @@ namespace PlotPingApp
     internal class Export
     {
         private Traceroute traceroute = null;
-        private static MinMaxTracker minmax = null;
+        private MinMaxTracker minmax = null;
+        private bool track = false;
 
-        public Export(Traceroute traceroute)
+        public Export(Traceroute traceroute, MinMaxTracker minmax = null)
         {
             this.traceroute = traceroute;
+            this.minmax = minmax == null ? new MinMaxTracker() : minmax;
+            this.track = minmax == null;            // if started a new tracker, we need to track the samples, else just reference provided minmax tracker
         }
         public void ExportTo(string exportTo)
         {
@@ -25,7 +28,6 @@ namespace PlotPingApp
             {
                 export.WriteLine($"TRACE {traceroute.GetHostAddress()}");
                 int sequence = 0;
-                StartExport();
                 foreach (Hop[] hops in traceroute.GetTraces())
                 {
                     ExportSample(export, sequence++, hops, traceroute);
@@ -33,19 +35,14 @@ namespace PlotPingApp
             }
         }
 
-        public static void StartExport()
-        {
-            minmax = new MinMaxTracker();
-        }
-
-        public static string[] ExportSample(int sequence, Hop[] hops, Traceroute traceroute)
+        public string[] ExportSample(int sequence, Hop[] hops, Traceroute traceroute)
         {
             List<string> result = new List<string>();
             result.Add(sequence.ToString("D5") + " " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss zzz"));
             result.Add("  HOP RTT MIN MAX AVE PL% IP");
             foreach (var hop in hops)
             {
-                MinMax mm = minmax.Track(hop, sequence);
+                MinMax mm = track ? minmax.Track(hop, sequence) : minmax.Get(hop.ipAddress);
                 result.Add(String.Format(
                     "  {0} {2} {3} {4} {5} {6} {1}",
                         hop.hop.ToString("D3"),
@@ -54,13 +51,13 @@ namespace PlotPingApp
                         mm == null ? " * " : mm.min.ToString("D3"),
                         mm == null ? " * " : mm.max.ToString("D3"),
                         mm == null ? " * " : ((int)(mm.ave)).ToString("D3"),
-                        mm == null ? " * " : mm.pl.ToString("D3")
+                        mm == null ? " * " : (mm.pl * 100 / (sequence + 1)).ToString("D3")
                 ));
             }
             return result.ToArray();
         }
 
-        public static void ExportSample(StreamWriter export, int sequence, Hop[] hops, Traceroute traceroute)
+        public void ExportSample(StreamWriter export, int sequence, Hop[] hops, Traceroute traceroute)
         {
             foreach (var item in ExportSample(sequence, hops, traceroute))
             {
