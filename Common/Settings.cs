@@ -23,7 +23,8 @@ namespace PlotPingApp
         private static Dictionary<string, string> settings = new Dictionary<string, string>()
         {
             // Default settings
-            ["LogOutputFolder"] = GetDefaultLogOutputFolder()
+            ["LogOutputFolder"] = GetDefaultLogOutputFolder(),
+            ["ActiveTracksWindow"] = "true",
         };
 
         internal static string Get(string key)
@@ -38,6 +39,10 @@ namespace PlotPingApp
         }
 
         internal static string LogOutputFolder { get { return Get("LogOutputFolder"); } set { Set("LogOutputFolder", value); } }
+        internal static bool ActiveTracksWindow { 
+            get { return Get("ActiveTracksWindow") == "true"; } 
+            set { Set("ActiveTracksWindow", value ? "true" : "false"); }
+        }
 
         internal static void LoadSettings()
         {
@@ -62,6 +67,7 @@ namespace PlotPingApp
             InitializeComponent();
             LoadSettings();
             logOutputFolder.Text = LogOutputFolder;
+            activeTracksWindowCheckBox.Checked = ActiveTracksWindow;
             if (logOutputFolder.Text == "")
             {
                 LogOutputFolder = logOutputFolder.Text = GetDefaultLogOutputFolder();
@@ -103,6 +109,11 @@ namespace PlotPingApp
             LoadSettings();
             Set(form.Name + ".Bounds", JsonConvert.SerializeObject(form.Bounds));
             SaveSettings();
+        }
+
+        private void activeTracksWindow_CheckedChanged(object sender, EventArgs e)
+        {
+            ActiveTracksWindow = activeTracksWindowCheckBox.Checked;
         }
     }
 }
