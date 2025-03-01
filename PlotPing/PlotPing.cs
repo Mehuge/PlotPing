@@ -109,7 +109,7 @@ namespace PlotPingApp
             this.BeginInvoke(new System.Action(() =>
             {
                 updateStatus();
-                RenderTrace(liveView, listViewTrace, hops, traceroute);
+                RenderTrace();
             }));
         }
 
@@ -181,25 +181,77 @@ namespace PlotPingApp
             if (updated)
             {
                 ResizePlotters();
-                RenderHopTraces();
+                RenderHopTraces(GetTracesForWindow(offset));
             }
         }
 
-        private void RenderTrace(FormsPlot formsPlot1, ListView listViewTrace, Hop[] hops, Traceroute traceroute)
+        private Hop[][] GetTracesForWindow(int offset)
         {
+            if (traceroute == null) return null;
+
             Hop[][] traces = traceroute.GetTraces();
+            if (traces.Length > windowSize)
+            {
+                int start = traces.Length - windowSize + offset;
+                traces = traces.Skip(start).Take(windowSize).ToArray();
+            }
+            return traces;
+        }
 
-            offsetBar.Visible = traces.Length > windowSize;
+        private MinMaxTracker GetMinMaxes(Hop[][] traces)
+        {
+            MinMaxTracker minmaxes = new MinMaxTracker();
+            for (int i = 0; i < traces.Length; i++)
+            {
+                foreach (Hop hop in traces[i])
+                {
+                    minmaxes.Track(hop, i);
+                }
+            }
+            return minmaxes;
+        }
+
+        private void ShowHideWindowSlider()
+        {
+            int traceCount = traceroute.GetTraces().Length;
+            offsetBar.Visible = traceCount > windowSize;
             offsetBar.Maximum = 0;
-            offsetBar.Minimum = -(traces.Length - windowSize);
+            offsetBar.Minimum = -(traceCount - windowSize);
+        }
 
-            if (logWriter != null) logWriter.WriteSample(traces.Length, hops, traceroute);
+        private void RenderTrace()
+        {
+            ShowHideWindowSlider();
 
-            // TODO: This needs to be filtered by window size
-            Plotter.RenderTrace(formsPlot1, hops, traceroute, offset, windowSize);
+            // Active trace always uses 0 offset window for minmax calc unless ActiveTracksWindow option is set
+            Hop[][] traces = GetTracesForWindow(Settings.ActiveTracksWindow ? offset : 0);
+            MinMaxTracker minmaxes = GetMinMaxes(traces);
 
-            RenderHopTraces();
+            // Show the last sample of the selected window (this will be the latest sample if window offset is 0)
+            Hop[] lastSample = traces.Last();
 
+            // Hop traces uses the offset from the window slider
+            Hop[][] hopTraces = Settings.ActiveTracksWindow || offset == 0 ? traces : GetTracesForWindow(offset);
+            // Hop traces currently don't show min/max info, so don't need to calc that
+            // but would do here
+
+            // If logging, write this hop to the log. The log uses the trace route tracked min/max info
+            // which covers all samples
+            if (logWriter != null) logWriter.WriteSample(traces.Length, lastSample, traceroute);
+
+            // Render the current traceroute results
+            Plotter.RenderTrace(liveView, lastSample, traceroute, offset, windowSize, minmaxes);
+
+            // Render the hop graph(s)
+            RenderHopTraces(hopTraces);
+
+            // Show the current trace in list view
+            ShowTraceroute(lastSample, traces.Length, minmaxes);
+        }
+
+        private void ShowTraceroute(Hop[] hops, int samples, MinMaxTracker minmaxes)
+        {
+            // Show current traceroute in list view
             listViewTrace.Items.Clear();
             listViewTrace.View = View.Details;
 
@@ -212,13 +264,13 @@ namespace PlotPingApp
                 item.SubItems.Add(hop.rtt < 0 ? "*" : $"{hop.rtt} ms");
                 if (hop.ipAddress != null)
                 {
-                    MinMax minmax = traceroute.GetMinMax(hop.ipAddress);
+                    MinMax minmax = minmaxes.Get(hop.ipAddress);
                     if (minmax != null && minmax.min != -1)
                     {
                         item.SubItems.Add(minmax.min.ToString() + " ms");
                         item.SubItems.Add(minmax.max.ToString() + " ms");
                         item.SubItems.Add(((int)minmax.ave).ToString() + " ms");
-                        item.SubItems.Add(((double)minmax.pl / traces.Length * 100).ToString("n0"));
+                        item.SubItems.Add(((double)minmax.pl / samples * 100).ToString("n0"));
                         var plot = item.SubItems.Add(selectedHops.Contains(hop.hop) ? "📊" : "");
                         plot.Tag = "graph";
                     }
@@ -227,18 +279,11 @@ namespace PlotPingApp
             }
         }
 
-        private void RenderHopTraces()
+        private void RenderHopTraces(Hop[][] traces)
         {
             if (traceroute == null) return;
 
-            Hop[][] traces = traceroute.GetTraces();
             Hop[] hops = traces.Last();
-
-            if (traces.Length > windowSize)
-            {
-                int start = traces.Length - windowSize + offset;
-                traces = traces.Skip(start).Take(windowSize).ToArray();
-            }
 
             if (selectedHops.Count == 0)
             {
@@ -346,7 +391,7 @@ namespace PlotPingApp
             }
             windowSize = seconds / (PING_FREQUENCY / 1000);
             updateStatus();
-            RenderHopTraces();
+            RenderHopTraces(GetTracesForWindow(offset));
         }
 
         private void updateStatus()
@@ -358,7 +403,14 @@ namespace PlotPingApp
         {
             offset = offsetBar.Value;
             updateStatus();
-            RenderHopTraces();
+            if (Settings.ActiveTracksWindow)
+            {
+                RenderTrace();
+                return;
+            }
+            // active trace is not tracking the selected window, only the hop graphs are
+            // so only render those when changing window.
+            RenderHopTraces(GetTracesForWindow(offset));
         }
 
         private void listViewTrace_MouseDown(object sender, MouseEventArgs e)

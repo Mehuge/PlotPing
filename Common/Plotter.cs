@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SkiaSharp;
+using PlotPingApp.Common;
 
 namespace PlotPingApp
 {
@@ -28,7 +29,7 @@ namespace PlotPingApp
             }
         }
 
-        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute, int offset, int windowSize)
+        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute, int offset, int windowSize, MinMaxTracker minmaxes)
         {
             plot.Plot.Clear();
 
@@ -38,7 +39,7 @@ namespace PlotPingApp
             Tick[] ticks = hops.Select(t => new Tick(t.hop, t.hop.ToString(), true, false)).ToArray();
 
             double last = 0;
-            MinMax [] minmax = hops.Select(t => traceroute.GetMinMax(t.ipAddress)).ToArray();
+            MinMax [] minmax = hops.Select(t => minmaxes.Get(t.ipAddress)).ToArray();
 
             double[] lower = minmax.Select(x => x != null ? x.min : last).ToArray();
             double[] upper = minmax.Select(x => x != null ? x.max : last).ToArray();
@@ -66,7 +67,7 @@ namespace PlotPingApp
             plot.Plot.YAxis.SetTicks(latencyAxis);
             plot.Plot.YAxis.AxisTicks.MinorTickVisible = false;
             plot.Plot.SetAxisLimits(0.8, hops.Length + 0.2, 0, latencyMax);
-            plot.Plot.Title("Traceroute Results");
+            plot.Plot.Title(offset == 0 ? "Current Traceroute" : "Traceroute @ " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
             plot.Plot.Legend();
 
 
