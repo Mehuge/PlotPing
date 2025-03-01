@@ -29,7 +29,7 @@ namespace PlotPingApp
             }
         }
 
-        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute, int offset, int windowSize, MinMaxTracker minmaxes)
+        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute, bool isCurrent, int windowSize, MinMaxTracker minmaxes)
         {
             plot.Plot.Clear();
 
@@ -67,7 +67,7 @@ namespace PlotPingApp
             plot.Plot.YAxis.SetTicks(latencyAxis);
             plot.Plot.YAxis.AxisTicks.MinorTickVisible = false;
             plot.Plot.SetAxisLimits(0.8, hops.Length + 0.2, 0, latencyMax);
-            plot.Plot.Title(offset == 0 ? "Current Traceroute" : "Traceroute @ " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+            plot.Plot.Title(isCurrent ? "Current Traceroute" : "Traceroute @ " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
             plot.Plot.Legend();
 
 

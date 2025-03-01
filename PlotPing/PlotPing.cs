@@ -20,6 +20,7 @@ namespace PlotPingApp
         private int PING_FREQUENCY = 5000;
         private int windowSize = 900 / 5;
         private int offset = 0;
+        private int selectedSample = -1;          // -1 means track last trace
 
         public PlotPing()
         {
@@ -192,7 +193,7 @@ namespace PlotPingApp
             Hop[][] traces = traceroute.GetTraces();
             if (traces.Length > windowSize)
             {
-                int start = traces.Length - windowSize + offset;
+                int start = traces.Length - windowSize + offset - 1;
                 traces = traces.Skip(start).Take(windowSize).ToArray();
             }
             return traces;
@@ -213,6 +214,11 @@ namespace PlotPingApp
 
         private void ShowHideWindowSlider()
         {
+            if (traceroute == null)
+            {
+                offsetBar.Visible = false;
+                return;
+            }
             int traceCount = traceroute.GetTraces().Length;
             offsetBar.Visible = traceCount > windowSize;
             offsetBar.Maximum = 0;
@@ -223,30 +229,38 @@ namespace PlotPingApp
         {
             ShowHideWindowSlider();
 
+            if (traceroute == null) return;
+
+            Hop[][] all = traceroute.GetTraces();
+            Hop[] lastSample = all.Last();
+
+            // Sample window is defined by the current window offset
+            int sampleOffset = Settings.ActiveTracksWindow ? offset : 0;
+            if (selectedSample > -1)
+            {
+                // but if a sample has been selected, the sample window should end at this sample
+                sampleOffset = -(all.Length - selectedSample - 2);
+            }
+
             // Active trace always uses 0 offset window for minmax calc unless ActiveTracksWindow option is set
-            Hop[][] traces = GetTracesForWindow(Settings.ActiveTracksWindow ? offset : 0);
+            Hop[][] traces = GetTracesForWindow(sampleOffset);
             MinMaxTracker minmaxes = GetMinMaxes(traces);
 
-            // Show the last sample of the selected window (this will be the latest sample if window offset is 0)
-            Hop[] lastSample = traces.Last();
-
-            // Hop traces uses the offset from the window slider
-            Hop[][] hopTraces = Settings.ActiveTracksWindow || offset == 0 ? traces : GetTracesForWindow(offset);
-            // Hop traces currently don't show min/max info, so don't need to calc that
-            // but would do here
+            // Show the current sample if activeSample is -1, othewise show the active sample
+            Hop[] showSample = selectedSample == -1 ? lastSample : all[selectedSample];
 
             // If logging, write this hop to the log. The log uses the trace route tracked min/max info
-            // which covers all samples
-            if (logWriter != null) logWriter.WriteSample(traces.Length, lastSample, traceroute);
+            // which covers all samples. It always writes the last sample available.
+            if (logWriter != null) logWriter.WriteSample(all.Length, lastSample, traceroute);
 
             // Render the current traceroute results
-            Plotter.RenderTrace(liveView, lastSample, traceroute, offset, windowSize, minmaxes);
+            Plotter.RenderTrace(liveView, showSample, traceroute, showSample == lastSample, windowSize, minmaxes);
 
             // Render the hop graph(s)
-            RenderHopTraces(hopTraces);
+            RenderHopTraces(traces);
 
             // Show the current trace in list view
-            ShowTraceroute(lastSample, traces.Length, minmaxes);
+            ShowTraceroute(showSample, traces.Length, minmaxes);
         }
 
         private void ShowTraceroute(Hop[] hops, int samples, MinMaxTracker minmaxes)
@@ -390,18 +404,19 @@ namespace PlotPingApp
                 case 10: seconds = 48 * 3600; break;       // 48 hour
             }
             windowSize = seconds / (PING_FREQUENCY / 1000);
-            updateStatus();
-            RenderHopTraces(GetTracesForWindow(offset));
+            Redraw();
         }
 
         private void updateStatus()
         {
-            status.Text = traceroute == null ? "" : String.Format("{0}/{1} of {2}", offset, windowSize, traceroute.GetTraces().Length);
+            status.Text = "";
+            if (traceroute == null) return;
+            status.Text = String.Format("{0}/{1} of {2}", offset, windowSize, traceroute.GetTraces().Length)
+                            + (selectedSample > -1 ? String.Format(" show {0}", selectedSample) : "");
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void Redraw()
         {
-            offset = offsetBar.Value;
             updateStatus();
             if (Settings.ActiveTracksWindow)
             {
@@ -411,6 +426,14 @@ namespace PlotPingApp
             // active trace is not tracking the selected window, only the hop graphs are
             // so only render those when changing window.
             RenderHopTraces(GetTracesForWindow(offset));
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            offset = offsetBar.Value;
+            updateStatus();
+            selectedSample = offset == 0 ? -1 : (traceroute.GetTraces().Length - 1) + offset;
+            Redraw();
         }
 
         private void listViewTrace_MouseDown(object sender, MouseEventArgs e)
