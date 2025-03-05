@@ -20,6 +20,7 @@ namespace PlotPingApp
         private int PING_FREQUENCY = 5000;
         private int windowSize = 900 / 5;
         private int offset = 0;
+        private int selectedSample = -1;          // -1 means track last trace
 
         public PlotPing()
         {
@@ -109,7 +110,7 @@ namespace PlotPingApp
             this.BeginInvoke(new System.Action(() =>
             {
                 updateStatus();
-                RenderTrace(liveView, listViewTrace, hops, traceroute);
+                RenderTrace();
             }));
         }
 
@@ -181,25 +182,90 @@ namespace PlotPingApp
             if (updated)
             {
                 ResizePlotters();
-                RenderHopTraces();
+                RenderHopTraces(GetTracesForWindow(offset));
             }
         }
 
-        private void RenderTrace(FormsPlot formsPlot1, ListView listViewTrace, Hop[] hops, Traceroute traceroute)
+        private Hop[][] GetTracesForWindow(int offset)
         {
+            if (traceroute == null) return null;
+
             Hop[][] traces = traceroute.GetTraces();
+            if (traces.Length > windowSize)
+            {
+                int start = traces.Length - windowSize + offset - 1;
+                traces = traces.Skip(start).Take(windowSize).ToArray();
+            }
+            return traces;
+        }
 
-            offsetBar.Visible = traces.Length > windowSize;
+        private MinMaxTracker GetMinMaxes(Hop[][] traces)
+        {
+            MinMaxTracker minmaxes = new MinMaxTracker();
+            for (int i = 0; i < traces.Length; i++)
+            {
+                foreach (Hop hop in traces[i])
+                {
+                    minmaxes.Track(hop, i);
+                }
+            }
+            return minmaxes;
+        }
+
+        private void ShowHideWindowSlider()
+        {
+            if (traceroute == null)
+            {
+                offsetBar.Visible = false;
+                return;
+            }
+            int traceCount = traceroute.GetTraces().Length;
+            offsetBar.Visible = traceCount > windowSize;
             offsetBar.Maximum = 0;
-            offsetBar.Minimum = -(traces.Length - windowSize);
+            offsetBar.Minimum = -(traceCount - windowSize);
+        }
 
-            if (logWriter != null) logWriter.WriteSample(traces.Length, hops, traceroute);
+        private void RenderTrace()
+        {
+            ShowHideWindowSlider();
 
-            // TODO: This needs to be filtered by window size
-            Plotter.RenderTrace(formsPlot1, hops, traceroute, offset, windowSize);
+            if (traceroute == null) return;
 
-            RenderHopTraces();
+            Hop[][] all = traceroute.GetTraces();
+            Hop[] lastSample = all.Last();
 
+            // Sample window is defined by the current window offset
+            int sampleOffset = Settings.ActiveTracksWindow ? offset : 0;
+            if (selectedSample > -1)
+            {
+                // but if a sample has been selected, the sample window should end at this sample
+                sampleOffset = -(all.Length - selectedSample - 2);
+            }
+
+            // Active trace always uses 0 offset window for minmax calc unless ActiveTracksWindow option is set
+            Hop[][] traces = GetTracesForWindow(sampleOffset);
+            MinMaxTracker minmaxes = GetMinMaxes(traces);
+
+            // Show the current sample if activeSample is -1, othewise show the active sample
+            Hop[] showSample = selectedSample == -1 ? lastSample : all[selectedSample];
+
+            // If logging, write this hop to the log. The log uses the trace route tracked min/max info
+            // which covers all samples. It always writes the last sample available.
+            if (logWriter != null) logWriter.WriteSample(all.Length, lastSample, traceroute);
+
+            // Render the current traceroute results
+            Plotter.RenderTrace(liveView, showSample, traceroute, showSample == lastSample, windowSize, minmaxes);
+
+            // Render the hop graph(s)
+            RenderHopTraces(traces);
+
+            // Show the current trace in list view
+            ShowTraceroute(showSample, traces.Length, minmaxes);
+        }
+
+        private void ShowTraceroute(Hop[] hops, int samples, MinMaxTracker minmaxes)
+        {
+            // Show current traceroute in list view
             listViewTrace.Items.Clear();
             listViewTrace.View = View.Details;
 
@@ -212,13 +278,13 @@ namespace PlotPingApp
                 item.SubItems.Add(hop.rtt < 0 ? "*" : $"{hop.rtt} ms");
                 if (hop.ipAddress != null)
                 {
-                    MinMax minmax = traceroute.GetMinMax(hop.ipAddress);
+                    MinMax minmax = minmaxes.Get(hop.ipAddress);
                     if (minmax != null && minmax.min != -1)
                     {
                         item.SubItems.Add(minmax.min.ToString() + " ms");
                         item.SubItems.Add(minmax.max.ToString() + " ms");
                         item.SubItems.Add(((int)minmax.ave).ToString() + " ms");
-                        item.SubItems.Add(((double)minmax.pl / traces.Length * 100).ToString("n0"));
+                        item.SubItems.Add(((double)minmax.pl / samples * 100).ToString("n0"));
                         var plot = item.SubItems.Add(selectedHops.Contains(hop.hop) ? "📊" : "");
                         plot.Tag = "graph";
                     }
@@ -227,18 +293,11 @@ namespace PlotPingApp
             }
         }
 
-        private void RenderHopTraces()
+        private void RenderHopTraces(Hop[][] traces)
         {
             if (traceroute == null) return;
 
-            Hop[][] traces = traceroute.GetTraces();
             Hop[] hops = traces.Last();
-
-            if (traces.Length > windowSize)
-            {
-                int start = traces.Length - windowSize + offset;
-                traces = traces.Skip(start).Take(windowSize).ToArray();
-            }
 
             if (selectedHops.Count == 0)
             {
@@ -345,20 +404,36 @@ namespace PlotPingApp
                 case 10: seconds = 48 * 3600; break;       // 48 hour
             }
             windowSize = seconds / (PING_FREQUENCY / 1000);
-            updateStatus();
-            RenderHopTraces();
+            Redraw();
         }
 
         private void updateStatus()
         {
-            status.Text = traceroute == null ? "" : String.Format("{0}/{1} of {2}", offset, windowSize, traceroute.GetTraces().Length);
+            status.Text = "";
+            if (traceroute == null) return;
+            status.Text = String.Format("{0}/{1} of {2}", offset, windowSize, traceroute.GetTraces().Length)
+                            + (selectedSample > -1 ? String.Format(" show {0}", selectedSample) : "");
+        }
+
+        private void Redraw()
+        {
+            updateStatus();
+            if (Settings.ActiveTracksWindow)
+            {
+                RenderTrace();
+                return;
+            }
+            // active trace is not tracking the selected window, only the hop graphs are
+            // so only render those when changing window.
+            RenderHopTraces(GetTracesForWindow(offset));
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             offset = offsetBar.Value;
             updateStatus();
-            RenderHopTraces();
+            selectedSample = offset == 0 ? -1 : (traceroute.GetTraces().Length - 1) + offset;
+            Redraw();
         }
 
         private void listViewTrace_MouseDown(object sender, MouseEventArgs e)
