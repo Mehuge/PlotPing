@@ -27,12 +27,12 @@ namespace PlotPingApp
 
         private void multiPingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Action.StartPlotPing();
+            Utils.StartPlotPing();
         }
 
         private void multiPingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Action.StartMultiPing();
+            Utils.StartMultiPing();
         }
 
         private void buttonMRU_Click(object sender, EventArgs e)

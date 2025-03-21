@@ -166,7 +166,7 @@
     <Compile Include="Common\LogWriter.cs" />
     <Compile Include="Common\MinMaxTracker.cs" />
     <Compile Include="Common\MRU.cs" />
-    <Compile Include="Common\Action.cs" />
+    <Compile Include="Common\Utils.cs" />
     <Compile Include="MultiPing\MultiPing.cs">
       <SubType>Form</SubType>
     </Compile>

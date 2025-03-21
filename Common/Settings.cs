@@ -25,12 +25,14 @@ namespace PlotPingApp
             // Default settings
             ["LogOutputFolder"] = GetDefaultLogOutputFolder(),
             ["ActiveTracksWindow"] = "true",
+            ["ICMPTimeout"] = "3000",
         };
 
         internal static string Get(string key)
         {
             string value;
-            return settings.TryGetValue(key, out value) ? value : null;
+            if (settings.TryGetValue(key, out value)) return value;
+            return null;
         }
 
         internal static void Set(string key, string value)
@@ -43,13 +45,22 @@ namespace PlotPingApp
             get { return Get("ActiveTracksWindow") == "true"; } 
             set { Set("ActiveTracksWindow", value ? "true" : "false"); }
         }
+        internal static int ICMPTimeout
+        {
+            get { return int.Parse(Get("ICMPTimeout")); }
+            set { Set("ICMPTimeout", value.ToString()); }
+        }
 
         internal static void LoadSettings()
         {
             try
             {
                 string json = File.ReadAllText(Path.Combine(appData, "settings.json"));
-                settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                Dictionary<string, string> loadedSettings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                foreach (var setting in loadedSettings)
+                {
+                    Set(setting.Key, setting.Value);
+                }
             }
             catch
             {
@@ -68,6 +79,7 @@ namespace PlotPingApp
             LoadSettings();
             logOutputFolder.Text = LogOutputFolder;
             activeTracksWindowCheckBox.Checked = ActiveTracksWindow;
+            timeout.Text = ICMPTimeout.ToString();
             if (logOutputFolder.Text == "")
             {
                 LogOutputFolder = logOutputFolder.Text = GetDefaultLogOutputFolder();
@@ -114,6 +126,17 @@ namespace PlotPingApp
         private void activeTracksWindow_CheckedChanged(object sender, EventArgs e)
         {
             ActiveTracksWindow = activeTracksWindowCheckBox.Checked;
+        }
+
+        private void timeout_TextChanged(object sender, EventArgs e)
+        {
+            int timeoutValue;
+            if (int.TryParse(timeout.Text, out timeoutValue))
+            {
+                ICMPTimeout = timeoutValue;
+                return;
+            }
+            timeout.Text = "4000";
         }
     }
 }

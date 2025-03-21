@@ -1,13 +1,8 @@
 ﻿using ScottPlot.Ticks;
 using ScottPlot;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SkiaSharp;
 using PlotPingApp.Common;
 
 namespace PlotPingApp
@@ -61,7 +56,7 @@ namespace PlotPingApp
 
             // plot.Plot.AddScatter(_hops, _latencies, label: "Latency", markerSize: (float)0.1);
             plot.Plot.AddScatter(_hops, average, markerSize: (float)8, color: Color.OrangeRed, markerShape: MarkerShape.openCircle);
-            plot.Plot.XLabel("Hop");
+            plot.Plot.XLabel("Hop (timeout " + traceroute.Timeout + "ms)");
             plot.Plot.XAxis.SetTicks(ticks);
             plot.Plot.YLabel("Latency (ms)");
             plot.Plot.YAxis.SetTicks(latencyAxis);

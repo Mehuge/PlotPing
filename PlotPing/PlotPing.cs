@@ -64,6 +64,7 @@ namespace PlotPingApp
             if (traceroute == null)
             {
                 traceroute = new Traceroute(ipAddress);
+                traceroute.SetTimeout(Settings.ICMPTimeout);
             }
             else if (traceroute.GetHostAddress() != ipAddress)
             {
@@ -383,7 +384,6 @@ namespace PlotPingApp
         {
             base.OnFormClosing(e);
             mru.Save();
-            Settings.SaveSettings();
         }
 
         private void window_SelectedIndexChanged(object sender, EventArgs e)
@@ -482,13 +482,13 @@ namespace PlotPingApp
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Action.ShowHelp();
+            Utils.ShowHelp();
 
         }
 
         private void githubToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Action.OpenGitHub();
+            Utils.OpenGitHub();
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -509,7 +509,12 @@ namespace PlotPingApp
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Action.ShowSettings();
+            Utils.ShowSettings(settingsClosed);
+        }
+
+        private void settingsClosed(object sender, FormClosedEventArgs e)
+        {
+            if (traceroute != null) traceroute.SetTimeout(Settings.ICMPTimeout);
         }
 
         private void logTrace_CheckedChanged(object sender, EventArgs e)
@@ -529,12 +534,12 @@ namespace PlotPingApp
 
         private void multiPingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Action.StartMultiPing();
+            Utils.StartMultiPing();
         }
 
         private void plotPingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Action.StartPlotPing();
+            Utils.StartPlotPing();
         }
     }
 }

@@ -35,6 +35,8 @@
             this.settingsPanel = new System.Windows.Forms.Panel();
             this.activeTracksWindowCheckBox = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.timeout = new System.Windows.Forms.TextBox();
             this.settingsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,11 +108,31 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Settings";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 46);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 16);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Timeout (ms)";
+            // 
+            // timeout
+            // 
+            this.timeout.Location = new System.Drawing.Point(150, 43);
+            this.timeout.Name = "timeout";
+            this.timeout.Size = new System.Drawing.Size(100, 22);
+            this.timeout.TabIndex = 7;
+            this.timeout.Text = "4000";
+            this.timeout.TextChanged += new System.EventHandler(this.timeout_TextChanged);
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(612, 255);
+            this.Controls.Add(this.timeout);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.settingsPanel);
             this.Controls.Add(this.buttonOk);
@@ -140,5 +162,7 @@
         private System.Windows.Forms.Panel settingsPanel;
         private System.Windows.Forms.CheckBox activeTracksWindowCheckBox;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox timeout;
     }
 }

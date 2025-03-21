@@ -21,7 +21,7 @@ namespace PlotPingApp
 
         private void panel2_Click(object sender, EventArgs e)
         {
-            Action.Donation();
+            Utils.Donation();
             this.Close();
         }
     }

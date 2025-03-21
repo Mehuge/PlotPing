@@ -31,7 +31,7 @@ namespace PlotPingApp
         private Ping pingSender = new Ping();
         private PingOptions options = new PingOptions() { DontFragment = true };
         private byte[] buffer = Encoding.ASCII.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        private int timeout = 120;
+        private int timeout = 3000;
         private int maxTTL = 30;
         private string hostAddress;
         private string ipAddress;
@@ -45,7 +45,7 @@ namespace PlotPingApp
 
         public delegate void TraceEventHandler(object sender, Hop[] hops);
         public event TraceEventHandler OnTrace;
-
+        public int Timeout { get { return timeout; } }
 
         public MinMax GetMinMax(string ip)
         {
@@ -86,8 +86,8 @@ namespace PlotPingApp
             }
         }
 
-        public Traceroute(string hostOrIp) {
-
+        public Traceroute(string hostOrIp)
+        {
             SetHostAddress(hostOrIp);
         }
 
@@ -248,6 +248,11 @@ namespace PlotPingApp
         public string GetIPAddress()
         {
             return ipAddress;
+        }
+
+        internal void SetTimeout(int ICMPTimeout)
+        {
+            timeout = ICMPTimeout;
         }
     }
 }
