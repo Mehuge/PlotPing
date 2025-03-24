@@ -22,7 +22,7 @@ namespace PlotPingApp
             this.minmax = minmax;
         }
 
-        private void Open(Traceroute traceroute)
+        private void Open(TraceEngine traceroute)
         {
             if (stream == null)
             {
@@ -31,7 +31,7 @@ namespace PlotPingApp
             }
         }
 
-        internal void WriteSample(int sequence, Hop[] hops, Traceroute traceroute)
+        internal void WriteSample(int sequence, Hop[] hops, TraceEngine traceroute)
         {
             Open(traceroute);
             exporter.ExportSample(stream, sequence, hops, traceroute);

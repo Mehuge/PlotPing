@@ -15,7 +15,7 @@ namespace PlotPingApp
     public partial class PlotPing : Form
     {
         private MRU mru;
-        private Traceroute traceroute = null;
+        private TraceEngine traceroute = null;
         private LogWriter logWriter = null;
         private int PING_FREQUENCY = 5000;
         private int windowSize = 900 / 5;
@@ -61,19 +61,6 @@ namespace PlotPingApp
         private void StartTrace()
         {
             string ipAddress = this.testIPAddress.Text.Trim();
-            if (traceroute == null)
-            {
-                traceroute = new Traceroute(ipAddress);
-                traceroute.SetTimeout(Settings.ICMPTimeout);
-            }
-            else if (traceroute.GetHostAddress() != ipAddress)
-            {
-                traceroute.Clear();
-                traceroute.SetHostAddress(ipAddress);
-                selectedHops.Clear();
-                while (plotters.Count > 0) RemoveLatencyPlotter(0);
-            }
-
             mru.Add(ipAddress);
             mru.Save();
             buttonGoNew.Text = "Stop";
@@ -83,9 +70,46 @@ namespace PlotPingApp
                 StartLogging(traceroute.GetHostAddress());
             }
 
-            traceroute.OnTrace += Traceroute_OnTrace;
+            if (traceroute != null)
+            {
+                if (traceroute.GetHostAddress() == ipAddress)
+                {
+                    // Resume tracing
+                    traceroute.Start();
+                    return;
+                }
 
-            Task.Run(() => { traceroute.StartBackground(PING_FREQUENCY); });
+                // change of IP
+                traceroute.Clear();
+                traceroute.SetHostAddress(ipAddress);
+                selectedHops.Clear();
+                while (plotters.Count > 0) RemoveLatencyPlotter(0);
+            }
+            else
+            {
+                // Complete new trace
+                traceroute = new TraceEngine(ipAddress);
+                traceroute.SetTimeout(Settings.ICMPTimeout);
+                traceroute.OnProbe += Traceroute_OnProbe;
+                traceroute.OnTrace += Traceroute_OnTrace;
+            }
+
+            // New IP, send probe first
+            traceroute.SendProbe();
+            traceStatus.Text = "Probing...";
+            traceStatus.Visible = true;
+        }
+
+        private void Traceroute_OnProbe(object sender, Hop[] hops)
+        {
+            StartTracing();
+        }
+
+        private void StartTracing()
+        {
+            traceStatus.Text = "Pinging...";
+            traceStatus.Visible = true;
+            traceroute.Start();
         }
 
         private void StartLogging(string host)
@@ -101,7 +125,7 @@ namespace PlotPingApp
 
         private void StopTrace()
         {
-            traceroute?.StopBackground();
+            traceroute?.Stop();
             buttonGoNew.Text = "Start";
             offsetBar.Visible = false;
         }
@@ -110,7 +134,8 @@ namespace PlotPingApp
         {
             this.BeginInvoke(new System.Action(() =>
             {
-                updateStatus();
+                traceStatus.Visible = false;
+                UpdateStatus();
                 RenderTrace();
             }));
         }
@@ -300,7 +325,7 @@ namespace PlotPingApp
 
             Hop[] hops = traces.Last();
 
-            if (selectedHops.Count == 0)
+            if (selectedHops.Count == 0 && hops.Length > 0)
             {
                 // auto select the last responding hop
                 int showHop = hops.Length;
@@ -407,7 +432,7 @@ namespace PlotPingApp
             Redraw();
         }
 
-        private void updateStatus()
+        private void UpdateStatus()
         {
             status.Text = "";
             if (traceroute == null) return;
@@ -417,7 +442,7 @@ namespace PlotPingApp
 
         private void Redraw()
         {
-            updateStatus();
+            UpdateStatus();
             if (Settings.ActiveTracksWindow)
             {
                 RenderTrace();
@@ -431,7 +456,7 @@ namespace PlotPingApp
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             offset = offsetBar.Value;
-            updateStatus();
+            UpdateStatus();
             selectedSample = offset == 0 ? -1 : (traceroute.GetTraces().Length - 1) + offset;
             Redraw();
         }
