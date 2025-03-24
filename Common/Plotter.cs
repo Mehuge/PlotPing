@@ -24,9 +24,10 @@ namespace PlotPingApp
             }
         }
 
-        static internal void RenderTrace(FormsPlot plot, Hop[] hops, Traceroute traceroute, bool isCurrent, int windowSize, MinMaxTracker minmaxes)
+        static internal void RenderTrace(FormsPlot plot, Hop[] hops, TraceEngine traceroute, bool isCurrent, int windowSize, MinMaxTracker minmaxes)
         {
             plot.Plot.Clear();
+            if (hops.Length == 0) return;
 
             // Convert timestamps to seconds from start
             double[] _hops = hops.Select(t => (double)t.hop).ToArray();
@@ -83,7 +84,7 @@ namespace PlotPingApp
             double latencyMax = hopLatencies.Length > 0 ? ((int)((hopLatencies.Max() / 30) + 1)) * 30 : 30;
 
             // select all dropout hops, latencyMax and time values
-            Hop[][] dropouts = hops.Where(x => i < x.Length && x[i].rtt == -1).ToArray();
+            Hop[][] dropouts = hops.Where(x => i < x.Length && x[i].rtt <= -1).ToArray();
             double[] dropoutBars = dropouts.Select(x => latencyMax).ToArray();
             double[] dropoutTimes = dropouts.Select(x => x[i].timestamp.ToOADate()).ToArray();
 
