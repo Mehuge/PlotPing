@@ -12,11 +12,11 @@ namespace PlotPingApp
 {
     internal class Export
     {
-        private Traceroute traceroute = null;
+        private TraceEngine traceroute = null;
         private MinMaxTracker minmax = null;
         private bool track = false;
 
-        public Export(Traceroute traceroute, MinMaxTracker minmax = null)
+        public Export(TraceEngine traceroute, MinMaxTracker minmax = null)
         {
             this.traceroute = traceroute;
             this.minmax = minmax == null ? new MinMaxTracker() : minmax;
@@ -35,7 +35,7 @@ namespace PlotPingApp
             }
         }
 
-        public string[] ExportSample(int sequence, Hop[] hops, Traceroute traceroute)
+        public string[] ExportSample(int sequence, Hop[] hops, TraceEngine traceroute)
         {
             List<string> result = new List<string>();
             result.Add(sequence.ToString("D5") + " " + hops[0].timestamp.ToString("yyyy-MM-dd HH:mm:ss zzz"));
@@ -57,7 +57,7 @@ namespace PlotPingApp
             return result.ToArray();
         }
 
-        public void ExportSample(StreamWriter export, int sequence, Hop[] hops, Traceroute traceroute)
+        public void ExportSample(StreamWriter export, int sequence, Hop[] hops, TraceEngine traceroute)
         {
             foreach (var item in ExportSample(sequence, hops, traceroute))
             {

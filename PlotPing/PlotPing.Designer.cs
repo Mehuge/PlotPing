@@ -62,6 +62,7 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logTrace = new System.Windows.Forms.CheckBox();
+            this.traceStatus = new System.Windows.Forms.Label();
             HOP = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.offsetBar)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -371,12 +372,23 @@
             this.logTrace.UseVisualStyleBackColor = true;
             this.logTrace.CheckedChanged += new System.EventHandler(this.logTrace_CheckedChanged);
             // 
+            // traceStatus
+            // 
+            this.traceStatus.BackColor = System.Drawing.Color.White;
+            this.traceStatus.Location = new System.Drawing.Point(172, 260);
+            this.traceStatus.Name = "traceStatus";
+            this.traceStatus.Size = new System.Drawing.Size(379, 23);
+            this.traceStatus.TabIndex = 20;
+            this.traceStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.traceStatus.Visible = false;
+            // 
             // PlotPing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(1352, 923);
+            this.Controls.Add(this.traceStatus);
             this.Controls.Add(this.logTrace);
             this.Controls.Add(this.status);
             this.Controls.Add(this.window);
@@ -439,6 +451,7 @@
         private System.Windows.Forms.ToolStripMenuItem multiPingToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem plotPingToolStripMenuItem1;
+        private System.Windows.Forms.Label traceStatus;
     }
 }
 
