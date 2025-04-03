@@ -30,7 +30,7 @@ namespace PlotPingApp
                 int sequence = 0;
                 foreach (Hop[] hops in traceroute.GetTraces())
                 {
-                    ExportSample(export, sequence++, hops, traceroute);
+                    if (hops.Length > 0) ExportSample(export, sequence++, hops, traceroute);
                 }
             }
         }
