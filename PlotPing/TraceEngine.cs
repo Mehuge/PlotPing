@@ -39,6 +39,7 @@ namespace PlotPingApp
 
     internal class AsyncPing
     {
+        internal int traceId;
         internal Stopwatch sw;
         internal Hop hop;
         internal Action<AsyncPing> callback;
@@ -54,6 +55,7 @@ namespace PlotPingApp
         private string ipAddress;
         private int PING_FREQUENCY = 5000;
         private System.Threading.Timer backgroundTimer;
+        private int activeTraceId = 0;
 
         public delegate void TraceEventHandler(object sender, Hop[] hops);
         public event TraceEventHandler OnTrace;
@@ -108,6 +110,7 @@ namespace PlotPingApp
             backlog.Clear();
             minmax.Clear();
             maxTTL = 30;
+            ++activeTraceId;
         }
 
         internal void Start()
@@ -123,6 +126,7 @@ namespace PlotPingApp
         private void StartBackground(int interval = 5000)
         {
             if (backgroundTimer != null) StopBackground();
+            ++activeTraceId;
             backgroundTimer = new System.Threading.Timer(
                 callback: QueueTrace,
                 state: null,
@@ -145,6 +149,7 @@ namespace PlotPingApp
 
         internal void SendProbe()
         {
+            ++activeTraceId;
             QueueTrace(true, ProbeComplete);
         }
 
@@ -190,6 +195,7 @@ namespace PlotPingApp
         private void PingAsync(Trace trace, Hop hop, Action<AsyncPing> complete)
         {
             AsyncPing ping = new AsyncPing();
+            ping.traceId = activeTraceId;
             ping.sw = new Stopwatch();
             ping.hop = hop;
             ping.callback = complete;
@@ -207,6 +213,12 @@ namespace PlotPingApp
             if (e.Cancelled)
             {
                 Debug.Print("CANCELLED");
+                return;
+            }
+
+            if (ping.traceId != activeTraceId)
+            {
+               return;                    // If a new trace was started while a trace was running, ignore old trace responses
             }
 
             if (e.Error != null)
@@ -243,7 +255,7 @@ namespace PlotPingApp
         {
             int count = traces.Count;
 
-            Debug.Print("TRACE " + trace.sequence + " " + trace.ipAddress + " MAXTTL " + maxTTL);
+            Debug.Print("TRACE " + trace.sequence + " " + trace.ipAddress + " MAXTTL " + maxTTL + " TRACE ID " + activeTraceId);
             int index = trace.hops.FindIndex(hop => hop.ipAddress == trace.ipAddress);
             maxTTL = index < 0 ? maxTTL + 1 : index + 1;
             Hop[] hops = trace.hops.Take(maxTTL).ToArray();
