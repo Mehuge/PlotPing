@@ -41,6 +41,7 @@ namespace PlotPingApp
         }
         internal void Save()
         {
+            if (mru.Count == 0) return;                 // dont save empty list. happens if we call save but never called load or added any content
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(mruFilePath));
