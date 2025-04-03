@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlotPing));
             this.testIPAddress = new System.Windows.Forms.TextBox();
             this.liveView = new ScottPlot.FormsPlot();
-            this.buttonGoNew = new System.Windows.Forms.Button();
+            this.buttonStartStop = new System.Windows.Forms.Button();
             this.listViewTrace = new System.Windows.Forms.ListView();
             this.IPAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.RTT = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -94,16 +94,16 @@
             this.liveView.Size = new System.Drawing.Size(682, 468);
             this.liveView.TabIndex = 3;
             // 
-            // buttonGoNew
+            // buttonStartStop
             // 
-            this.buttonGoNew.Location = new System.Drawing.Point(573, 31);
-            this.buttonGoNew.Margin = new System.Windows.Forms.Padding(4);
-            this.buttonGoNew.Name = "buttonGoNew";
-            this.buttonGoNew.Size = new System.Drawing.Size(98, 32);
-            this.buttonGoNew.TabIndex = 5;
-            this.buttonGoNew.Text = "Start";
-            this.buttonGoNew.UseVisualStyleBackColor = true;
-            this.buttonGoNew.Click += new System.EventHandler(this.buttonGoNew_Click);
+            this.buttonStartStop.Location = new System.Drawing.Point(573, 31);
+            this.buttonStartStop.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonStartStop.Name = "buttonStartStop";
+            this.buttonStartStop.Size = new System.Drawing.Size(98, 32);
+            this.buttonStartStop.TabIndex = 5;
+            this.buttonStartStop.Text = "Start";
+            this.buttonStartStop.UseVisualStyleBackColor = true;
+            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
             // listViewTrace
             // 
@@ -396,7 +396,7 @@
             this.Controls.Add(this.buttonMRU);
             this.Controls.Add(this.graphs);
             this.Controls.Add(this.listViewTrace);
-            this.Controls.Add(this.buttonGoNew);
+            this.Controls.Add(this.buttonStartStop);
             this.Controls.Add(this.testIPAddress);
             this.Controls.Add(this.liveView);
             this.Controls.Add(this.offsetBar);
@@ -421,7 +421,7 @@
 
         private System.Windows.Forms.TextBox testIPAddress;
         private ScottPlot.FormsPlot liveView;
-        private System.Windows.Forms.Button buttonGoNew;
+        private System.Windows.Forms.Button buttonStartStop;
         private System.Windows.Forms.ListView listViewTrace;
         private System.Windows.Forms.ColumnHeader IPAddress;
         private System.Windows.Forms.ColumnHeader RTT;

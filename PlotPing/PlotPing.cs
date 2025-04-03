@@ -44,54 +44,71 @@ namespace PlotPingApp
             window.SelectedIndex = 4;
         }
 
-        private void buttonGoNew_Click(object sender, EventArgs e)
+        private void buttonStartStop_Click(object sender, EventArgs e)
         {
-            bool start = buttonGoNew.Text == "Start";
+            bool start = buttonStartStop.Text == "Start";
             StopTrace();
             if (start) StartTrace();
         }
 
         public void Start(string ipAddress)
         {
-            StopTrace();
             testIPAddress.Text = ipAddress.Trim();
             StartTrace();
         }
 
         private void StartTrace()
         {
+            StopTrace();                // stop currently running trace
+
+            testIPAddress.BackColor = SystemColors.Window;
             string ipAddress = this.testIPAddress.Text.Trim();
+            if (ipAddress.Length == 0) return;
+
+            if (traceroute?.GetHostAddress() == ipAddress)
+            {
+                // Resume tracing
+                buttonStartStop.Text = "Stop";
+                traceroute.Start();
+                return;
+            }
+
+            try
+            {
+                if (traceroute != null)
+                {
+                    // change of IP
+                    traceroute.Clear();
+                    traceroute.SetHostAddress(ipAddress);
+                    selectedHops.Clear();
+                    listViewTrace.Items.Clear();
+                    liveView.Plot.Clear();
+                    while (plotters.Count > 0) RemoveLatencyPlotter(0);
+                }
+                else
+                {
+                    // Complete new trace
+                    traceroute = new TraceEngine(ipAddress);
+                    traceroute.SetTimeout(Settings.ICMPTimeout);
+                    traceroute.OnProbe += Traceroute_OnProbe;
+                    traceroute.OnTrace += Traceroute_OnTrace;
+                }
+            }
+            catch (ArgumentException)
+            {
+                testIPAddress.BackColor = Color.Red;
+                return;
+            }
+
+            // starting new trace (either changed IP or new IP)
+            buttonStartStop.Text = "Stop";
             mru.Add(ipAddress);
             mru.Save();
-            buttonGoNew.Text = "Stop";
 
+            // if logging is required, start logging
             if (logTrace.Checked)
             {
                 StartLogging(traceroute.GetHostAddress());
-            }
-
-            if (traceroute != null)
-            {
-                if (traceroute.GetHostAddress() == ipAddress)
-                {
-                    // Resume tracing
-                    traceroute.Start();
-                    return;
-                }
-
-                // change of IP
-                traceroute.Clear();
-                traceroute.SetHostAddress(ipAddress);
-                selectedHops.Clear();
-                while (plotters.Count > 0) RemoveLatencyPlotter(0);
-            }
-            else
-            {
-                // Complete new trace
-                traceroute = new TraceEngine(ipAddress);
-                traceroute.SetTimeout(Settings.ICMPTimeout);
-                traceroute.OnProbe += Traceroute_OnProbe;
-                traceroute.OnTrace += Traceroute_OnTrace;
             }
 
             // New IP, send probe first
@@ -102,6 +119,12 @@ namespace PlotPingApp
 
         private void Traceroute_OnProbe(object sender, Hop[] hops)
         {
+            if (hops == null)
+            {
+                traceStatus.Text = "No route to host";
+                testIPAddress.BackColor = Color.Red;
+                return;
+            }
             StartTracing();
         }
 
@@ -126,7 +149,7 @@ namespace PlotPingApp
         private void StopTrace()
         {
             traceroute?.Stop();
-            buttonGoNew.Text = "Start";
+            buttonStartStop.Text = "Start";
             offsetBar.Visible = false;
         }
 
@@ -490,7 +513,6 @@ namespace PlotPingApp
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (IPAddress.Text.Length == 0) return;
             StartTrace();
         }
 

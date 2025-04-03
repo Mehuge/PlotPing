@@ -295,19 +295,19 @@ namespace PlotPingApp
                 if (index + 1 < maxTTL) ++index;
             }
 
-                Hop[] hops = trace.hops.Take(index + 1).ToArray();
-                foreach (Hop hop in hops)
-                {
-                    Debug.Print("  HOP {0} IP {1} TTL {2} RTT {3}ms",
-                        hop.hop,
-                        hop.ipAddress ?? "Request Timed Out",
-                        hop.hop,
-                        hop.rtt < 0 ? "*" : hop.rtt.ToString("D")
-                    );
-                }
-                maxTTL = index + 1;
-                OnProbe?.Invoke(this, hops);
+            Hop[] hops = trace.hops.Take(index + 1).ToArray();
+            foreach (Hop hop in hops)
+            {
+                Debug.Print("  HOP {0} IP {1} TTL {2} RTT {3}ms",
+                    hop.hop,
+                    hop.ipAddress ?? "Request Timed Out",
+                    hop.hop,
+                    hop.rtt < 0 ? "*" : hop.rtt.ToString("D")
+                );
             }
+            maxTTL = index + 1;
+            OnProbe?.Invoke(this, hops);
+        }
 
         internal void SetTimeout(int ICMPTimeout)
         {
