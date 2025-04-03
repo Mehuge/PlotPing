@@ -282,8 +282,19 @@ namespace PlotPingApp
         {
             Debug.Print("PROBE " + trace.ipAddress + " MAXTTL " + maxTTL);
             int index = trace.hops.FindIndex(hop => hop.ipAddress == trace.ipAddress);
-            if (index >= 0)
+            if (index == -1)
             {
+                index = trace.hops.FindIndex(hop => hop.ipAddress != null);
+                if (index == -1)
+                {
+                    // completely empty trace, return 0 hops
+                    OnProbe?.Invoke(this, null);
+                    return;
+                }
+                // When don't find destination IP, include 1 failed reponse in results
+                if (index + 1 < maxTTL) ++index;
+            }
+
                 Hop[] hops = trace.hops.Take(index + 1).ToArray();
                 foreach (Hop hop in hops)
                 {
@@ -297,7 +308,6 @@ namespace PlotPingApp
                 maxTTL = index + 1;
                 OnProbe?.Invoke(this, hops);
             }
-        }
 
         internal void SetTimeout(int ICMPTimeout)
         {
