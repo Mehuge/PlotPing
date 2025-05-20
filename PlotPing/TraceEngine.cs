@@ -20,6 +20,7 @@ namespace PlotPingApp
         internal long rtt;                      // Round Trip Time (ms)
         internal string ipAddress;              // IP address responding to this hop
         internal int timeout;                   // Timeout used for this hop
+        internal AsyncPing ping;
     }
 
     public class MinMax
@@ -30,11 +31,18 @@ namespace PlotPingApp
         internal int pl;
     }
 
+    internal enum TraceStatus
+    {
+        Complete = 0, Failed = 1
+    }
+    
+
     internal class Trace
     {
         internal string ipAddress;
         internal int sequence;
         internal List<Hop> hops;
+        internal TraceStatus status;
     }
 
     internal class AsyncPing
@@ -111,6 +119,7 @@ namespace PlotPingApp
             minmax.Clear();
             maxTTL = 30;
             ++activeTraceId;
+            hostAddress = null;
         }
 
         internal void Start()
@@ -194,7 +203,7 @@ namespace PlotPingApp
 
         private void PingAsync(Trace trace, Hop hop, Action<AsyncPing> complete)
         {
-            AsyncPing ping = new AsyncPing();
+            AsyncPing ping = hop.ping = new AsyncPing();
             ping.traceId = activeTraceId;
             ping.sw = new Stopwatch();
             ping.hop = hop;
@@ -202,7 +211,16 @@ namespace PlotPingApp
             Ping pingSender = new Ping();
             pingSender.PingCompleted += PingSender_PingCompleted;
             ping.sw.Start();
-            pingSender.SendAsync(trace.ipAddress, hop.timeout, buffer, new PingOptions() { DontFragment = true, Ttl = hop.hop }, ping);
+            try
+            {
+                pingSender.SendAsync(trace.ipAddress, hop.timeout, buffer, new PingOptions() { DontFragment = true, Ttl = hop.hop }, ping);
+            }
+            catch (PingException)
+            {
+                // An exception during a trace fails the entire trace.
+                trace.status = TraceStatus.Failed;
+                complete(ping);
+            }
         }
 
         private void PingSender_PingCompleted(object sender, PingCompletedEventArgs e)
@@ -255,6 +273,12 @@ namespace PlotPingApp
         {
             int count = traces.Count;
 
+            if (trace.status == TraceStatus.Failed)
+            {
+                OnTrace?.Invoke(this, null);
+                return;
+            }
+
             Debug.Print("TRACE " + trace.sequence + " " + trace.ipAddress + " MAXTTL " + maxTTL + " TRACE ID " + activeTraceId);
             int index = trace.hops.FindIndex(hop => hop.ipAddress == trace.ipAddress);
             maxTTL = index < 0 ? maxTTL + 1 : index + 1;
@@ -281,6 +305,13 @@ namespace PlotPingApp
         private void ProbeComplete(Trace trace)
         {
             Debug.Print("PROBE " + trace.ipAddress + " MAXTTL " + maxTTL);
+            if (trace.status == TraceStatus.Failed)
+            {
+                // Trace failed, return empty trace
+                OnProbe?.Invoke(this, null);
+                return;
+            }
+
             int index = trace.hops.FindIndex(hop => hop.ipAddress == trace.ipAddress);
             if (index == -1)
             {

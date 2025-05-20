@@ -112,17 +112,19 @@ namespace PlotPingApp
             }
 
             // New IP, send probe first
-            traceroute.SendProbe();
             traceStatus.Text = "Probing...";
             traceStatus.Visible = true;
+            traceroute.SendProbe();
         }
 
         private void Traceroute_OnProbe(object sender, Hop[] hops)
         {
             if (hops == null)
             {
+                StopTrace();
                 traceStatus.Text = "No route to host";
                 testIPAddress.BackColor = Color.Red;
+                traceroute.Clear();
                 return;
             }
             StartTracing();
@@ -157,6 +159,16 @@ namespace PlotPingApp
         {
             this.BeginInvoke(new System.Action(() =>
             {
+                if (hops == null)
+                {
+                    // something went wrong (lost network probably) stop tracing
+                    StopTrace();
+                    traceStatus.Text = "No route to host";
+                    testIPAddress.BackColor = Color.Red;
+                    traceroute.Clear();
+                    return;
+                }
+                
                 traceStatus.Visible = false;
                 UpdateStatus();
                 RenderTrace();
